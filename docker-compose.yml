@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Mock backend service (optional for development)
+  mock-api:
+    image: node:18-alpine
+    ports:
+      - "8000:8000"
+    working_dir: /app
+    volumes:
+      - ./mock-server:/app
+    command: >
+      sh -c "
+        npm install express cors ws &&
+        node server.js
+      "
+    restart: unless-stopped
+
+networks:
+  default:
+    name: adventure-buddha-network

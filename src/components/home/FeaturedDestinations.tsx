@@ -1,0 +1,564 @@
+import { useState, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+
+interface Destination {
+  id: string;
+  name: string;
+  country: string;
+  image: string;
+  video?: string;
+  rating: number;
+  tripsCount: number;
+  description: string;
+  highlights: string[];
+  bestTime: string;
+  duration: string;
+  price: number;
+}
+
+interface DestinationCardProps {
+  destination: Destination;
+  index: number;
+}
+
+function DestinationCard({ destination, index }: DestinationCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // 3D tilt effect
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [15, -15]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-15, 15]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    x.set((e.clientX - centerX) / rect.width);
+    y.set((e.clientY - centerY) / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 50, rotateY: -15 }}
+      whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        delay: index * 0.15,
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }}
+      whileHover={{ y: -20 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d"
+      }}
+      className="group relative cursor-pointer"
+    >
+      <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl transform-gpu">
+        {/* Front Card */}
+        <AnimatePresence mode="wait">
+          {!isFlipped ? (
+            <motion.div
+              key="front"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0, rotateY: -90 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0"
+            >
+              {/* Background Image with Parallax */}
+              <motion.div
+                className="absolute inset-0"
+                animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
+                transition={{ duration: 0.6 }}
+              >
+                <img
+                  src={destination.image}
+                  alt={destination.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              </motion.div>
+
+              {/* Floating Elements */}
+              <motion.div
+                className="absolute top-4 left-4 z-20"
+                animate={isHovered ? { scale: 1.1, x: 5 } : { scale: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Badge className="bg-white/90 text-gray-800 border-0 shadow-lg backdrop-blur-sm">
+                  <MapPin className="h-3 w-3 mr-1" />
+                  {destination.country}
+                </Badge>
+              </motion.div>
+
+              {/* Rating Badge */}
+              <motion.div
+                className="absolute top-4 right-4 z-20"
+                animate={isHovered ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center shadow-lg">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                  <span className="text-sm font-bold text-gray-800">{destination.rating}</span>
+                </div>
+              </motion.div>
+
+              {/* Like Button */}
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLiked(!isLiked);
+                }}
+                className="absolute top-4 right-16 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                animate={isLiked ? { backgroundColor: "rgba(249, 115, 22, 0.9)" } : {}}
+              >
+                <Heart
+                  className={`h-4 w-4 ${isLiked ? 'fill-current text-white' : 'text-gray-600'}`}
+                />
+              </motion.button>
+
+              {/* Video Play Button */}
+              {destination.video && (
+                <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowVideo(true);
+                  }}
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-2xl">
+                    <Play className="h-6 w-6 text-orange-600 ml-1" />
+                  </div>
+                </motion.button>
+              )}
+
+              {/* Content Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
+                <motion.h3
+                  className="text-2xl font-bold mb-2"
+                  animate={isHovered ? { y: -5 } : { y: 0 }}
+                >
+                  {destination.name}
+                </motion.h3>
+
+                <motion.p
+                  className="text-white/90 mb-4 line-clamp-2"
+                  animate={isHovered ? { y: -3 } : { y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  {destination.description}
+                </motion.p>
+
+                <motion.div
+                  className="flex items-center justify-between"
+                  animate={isHovered ? { y: -3 } : { y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 mr-1" />
+                      {destination.tripsCount} trips
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      {destination.duration}
+                    </div>
+                  </div>
+
+                  <motion.div
+                    animate={isHovered ? { x: -5 } : { x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Button
+                      size="sm"
+                      className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsFlipped(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Details
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </div>
+
+              {/* Hover Glow Effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-3xl"
+                initial={{ opacity: 0 }}
+                animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.div>
+          ) : (
+            /* Back Card */
+            <motion.div
+              key="back"
+              initial={{ opacity: 0, rotateY: 90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              exit={{ opacity: 0, rotateY: 90 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600 p-6 flex flex-col justify-between"
+            >
+              <div>
+                <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsFlipped(false);
+                  }}
+                  className="mb-4 p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ArrowRight className="h-4 w-4 text-white rotate-180" />
+                </motion.button>
+
+                <h3 className="text-2xl font-bold text-white mb-4">{destination.name}</h3>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between text-white/90">
+                    <span className="font-medium">Best Time to Visit:</span>
+                    <span>{destination.bestTime}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-white/90">
+                    <span className="font-medium">Duration:</span>
+                    <span>{destination.duration}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-white/90">
+                    <span className="font-medium">Starting from:</span>
+                    <span className="font-bold">₹{destination.price.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-white font-semibold mb-3">Highlights:</h4>
+                  <ul className="space-y-2">
+                    {destination.highlights.map((highlight, idx) => (
+                      <motion.li
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-center text-white/90 text-sm"
+                      >
+                        <div className="w-2 h-2 bg-white rounded-full mr-3 flex-shrink-0" />
+                        {highlight}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex space-x-3">
+                <Button
+                  className="flex-1 bg-white text-orange-600 hover:bg-gray-100 rounded-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Book Now
+                </Button>
+                <Button
+                  variant="outline"
+                  className="px-4 border-white/30 text-white hover:bg-white/10 rounded-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Video Modal */}
+        <AnimatePresence>
+          {showVideo && destination.video && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-30 rounded-3xl"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowVideo(false);
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                className="w-full h-full max-w-md max-h-64 bg-black rounded-2xl overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <video
+                  src={destination.video}
+                  controls
+                  autoPlay
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Magnetic Effect Shadow */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-3xl blur-xl -z-10"
+        animate={isHovered ? {
+          scale: 1.1,
+          opacity: 0.6
+        } : {
+          scale: 1,
+          opacity: 0
+        }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.div>
+  );
+}
+
+export function FeaturedDestinations() {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const destinations: Destination[] = [
+    {
+      id: '1',
+      name: 'Ladakh',
+      country: 'India',
+      image: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
+      rating: 4.8,
+      tripsCount: 24,
+      description: 'High-altitude desert with stunning mountain landscapes and ancient monasteries',
+      highlights: ['Pangong Lake', 'Magnetic Hill', 'Leh Palace', 'Nubra Valley'],
+      bestTime: 'Jun - Sep',
+      duration: '8-12 days',
+      price: 45000
+    },
+    {
+      id: '2',
+      name: 'Goa',
+      country: 'India',
+      image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
+      rating: 4.6,
+      tripsCount: 18,
+      description: 'Beautiful beaches and vibrant nightlife with Portuguese colonial architecture',
+      highlights: ['Calangute Beach', 'Old Goa Churches', 'Dudhsagar Falls', 'Spice Plantations'],
+      bestTime: 'Nov - May',
+      duration: '5-7 days',
+      price: 25000
+    },
+    {
+      id: '3',
+      name: 'Kerala',
+      country: 'India',
+      image: 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
+      rating: 4.7,
+      tripsCount: 21,
+      description: 'Backwaters, houseboats, and lush green landscapes with Ayurvedic traditions',
+      highlights: ['Alleppey Backwaters', 'Munnar Tea Gardens', 'Periyar Wildlife', 'Kochi Culture'],
+      bestTime: 'Sep - Mar',
+      duration: '7-10 days',
+      price: 35000
+    },
+    {
+      id: '4',
+      name: 'Himachal Pradesh',
+      country: 'India',
+      image: 'https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg',
+      rating: 4.9,
+      tripsCount: 15,
+      description: 'Snow-capped mountains and adventure activities in the Himalayan foothills',
+      highlights: ['Shimla Colonial', 'Manali Adventure', 'Kullu Valley', 'Rohtang Pass'],
+      bestTime: 'Mar - Jun',
+      duration: '6-9 days',
+      price: 30000
+    }
+  ];
+
+  const categories = [
+    { id: 'all', name: 'All Destinations' },
+    { id: 'mountains', name: 'Mountains' },
+    { id: 'beaches', name: 'Beaches' },
+    { id: 'cultural', name: 'Cultural' },
+    { id: 'adventure', name: 'Adventure' }
+  ];
+
+  return (
+    <section className="py-20 bg-gradient-to-br from-white via-orange-50/30 to-white relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <motion.div
+          className="absolute top-20 right-20 w-64 h-64 bg-orange-200/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-20 w-48 h-48 bg-orange-300/10 rounded-full blur-2xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.4, 0.7, 0.4],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="inline-block p-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mb-6 shadow-lg"
+          >
+            <MapPin className="h-8 w-8 text-white" />
+          </motion.div>
+
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
+            Popular{' '}
+            <motion.span
+              className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{
+                backgroundSize: '200% 200%'
+              }}
+            >
+              Destinations
+            </motion.span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Explore our most sought-after travel destinations around the world.
+            Each destination tells a unique story of adventure and discovery.
+          </p>
+        </motion.div>
+
+        {/* Category Filters */}
+        <motion.div
+          className="flex flex-wrap justify-center gap-3 mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+        >
+          {categories.map((category, index) => (
+            <motion.div
+              key={category.id}
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 + index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 ${
+                  selectedCategory === category.id
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg border-0'
+                    : 'border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400'
+                }`}
+              >
+                {category.name}
+              </Button>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Destinations Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {destinations.map((destination, index) => (
+            <DestinationCard
+              key={destination.id}
+              destination={destination}
+              index={index}
+            />
+          ))}
+        </div>
+
+        {/* View All Button */}
+        <motion.div
+          className="text-center mt-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-full px-10 py-4 text-lg font-semibold border-2 border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              <span className="mr-3">Explore All Destinations</span>
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
