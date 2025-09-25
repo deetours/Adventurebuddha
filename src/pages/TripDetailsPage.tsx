@@ -32,7 +32,6 @@ import { Separator } from '@/components/ui/separator';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader } from '@/components/ui/loader';
 import type { Slot } from '@/lib/types';
 function TripDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +45,7 @@ function TripDetailsPage() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   // Fetch trip details
-  const { data: trip, isLoading, error } = useQuery({
+  const { data: trip, error } = useQuery({
     queryKey: ['trip', id],
     queryFn: () => apiClient.getTrip(id!),
     enabled: !!id,
@@ -60,14 +59,6 @@ function TripDetailsPage() {
       }
     }
   }, [trip]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
 
   if (error || !trip) {
     return (

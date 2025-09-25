@@ -8,7 +8,8 @@ import PerformanceMonitor from '../ui/PerformanceMonitor';
 const FloatingElementsSystem = lazy(() => import('./FloatingElementsSystem'));
 const DestinationOrbs = lazy(() => import('./DestinationOrbs'));
 const OrangeParticleSystem = lazy(() => import('./OrangeParticleSystem'));
-const MorphingCTAButtons = lazy(() => import('./MorphingCTAButtons'));
+// const MorphingCTAButtons = lazy(() => import('./MorphingCTAButtons'));
+import MorphingCTAButtons from './MorphingCTAButtons';
 
 export function Hero() {
   const [videoPlaying, setVideoPlaying] = useState(false);
@@ -19,8 +20,22 @@ export function Hero() {
     rating: 4.9
   });
 
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Performance-optimized animated counters
   useEffect(() => {
+    if (prefersReducedMotion) {
+      // Skip animations for users who prefer reduced motion
+      setStats({
+        travelers: 10000,
+        destinations: 50,
+        experience: 15,
+        rating: 4.9
+      });
+      return;
+    }
+
     const animateCounter = (target: number, setter: (val: number) => void, duration: number = 2000) => {
       let startTime: number | null = null;
       let animationFrame: number;
@@ -47,13 +62,13 @@ export function Hero() {
 
     // Stagger animations for performance
     const timeouts = [
-      setTimeout(() => animateCounter(10000, (val) => setStats(prev => ({ ...prev, travelers: val }))), 500),
-      setTimeout(() => animateCounter(50, (val) => setStats(prev => ({ ...prev, destinations: val }))), 800),
-      setTimeout(() => animateCounter(15, (val) => setStats(prev => ({ ...prev, experience: val }))), 1100)
+      setTimeout(() => animateCounter(10000, (val) => setStats(prev => ({ ...prev, travelers: val })), 1800), 500),
+      setTimeout(() => animateCounter(50, (val) => setStats(prev => ({ ...prev, destinations: val })), 1600), 800),
+      setTimeout(() => animateCounter(15, (val) => setStats(prev => ({ ...prev, experience: val })), 1400), 1100)
     ];
 
     return () => timeouts.forEach(clearTimeout);
-  }, []);
+  }, [prefersReducedMotion]);
 
   const statsData = [
     { label: 'Happy Travelers', value: `${stats.travelers.toLocaleString()}+` },
@@ -64,7 +79,7 @@ export function Hero() {
 
   return (
     <PerformanceMonitor onPerformanceIssue={(fps) => console.warn(`Performance issue: ${fps} FPS`)}>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center justify-center bg-white">
         {/* Performance-optimized background */}
         <div className="absolute inset-0 bg-gradient-to-br from-white via-orange-50 to-white" />
 
@@ -107,18 +122,18 @@ export function Hero() {
                   key={word}
                   className="inline-block mr-4"
                   variants={{
-                    hidden: { opacity: 0, y: 50, rotateX: -90 },
+                    hidden: { opacity: 0, y: 50 },
                     visible: {
                       opacity: 1,
                       y: 0,
-                      rotateX: 0,
                       transition: {
                         type: "spring",
-                        stiffness: 100,
-                        damping: 12
+                        stiffness: 120,
+                        damping: 20
                       }
                     }
                   }}
+                  style={{ willChange: 'transform' }}
                 >
                   {word === "Next" ? (
                     <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 bg-clip-text text-transparent">
@@ -132,6 +147,7 @@ export function Hero() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.2, duration: 0.8, type: "spring" }}
+                style={{ willChange: 'transform' }}
               >
                 Adventure
               </motion.span>
@@ -147,11 +163,11 @@ export function Hero() {
               embark on carefully curated journeys that create{' '}
               <motion.span
                 className="text-orange-600 font-semibold"
-                animate={{
+                animate={prefersReducedMotion ? {} : {
                   color: ['#ea580c', '#dc2626', '#ea580c'],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
@@ -168,9 +184,7 @@ export function Hero() {
               transition={{ delay: 1.8, duration: 0.8 }}
               className="mb-12"
             >
-              <Suspense fallback={<div className="h-20" />}>
-                <MorphingCTAButtons />
-              </Suspense>
+              <MorphingCTAButtons />
             </motion.div>
 
             {/* Legacy video button for compatibility */}
@@ -192,7 +206,7 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Enhanced stats with 3D effects */}
+          {/* Enhanced stats with optimized effects */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -202,28 +216,26 @@ export function Hero() {
             {statsData.map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ scale: 0, rotateY: -90 }}
-                animate={{ scale: 1, rotateY: 0 }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
                 transition={{
-                  delay: 2.5 + index * 0.2,
+                  delay: 2.5 + index * 0.15,
                   type: "spring",
                   stiffness: 200,
-                  damping: 20
+                  damping: 25
                 }}
-                whileHover={{
-                  scale: 1.1,
-                  rotateY: 5,
-                  z: 50
+                whileHover={prefersReducedMotion ? {} : {
+                  scale: 1.05,
+                  y: -5
                 }}
-                className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl transition-all duration-300 cursor-pointer"
-                style={{
-                  transformStyle: "preserve-3d"
-                }}
+                className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl transition-all duration-300 cursor-pointer transform-gpu"
+                style={{ willChange: 'transform' }}
               >
                 <motion.div
                   className="flex items-center justify-center mb-3"
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5 }}
+                  whileHover={prefersReducedMotion ? {} : { rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 0.4 }}
+                  style={{ willChange: 'transform' }}
                 >
                   <span className="text-3xl sm:text-4xl font-black text-orange-500">
                     {stat.value}
@@ -249,18 +261,20 @@ export function Hero() {
           onClick={() => setVideoPlaying(false)}
         >
           <motion.div
-            initial={{ scale: 0.8, opacity: 0, rotateY: -90 }}
-            animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-            exit={{ scale: 0.8, opacity: 0, rotateY: 90 }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="bg-white p-8 rounded-3xl max-w-2xl mx-4 relative shadow-2xl border-2 border-orange-200"
+            className="bg-white p-8 rounded-3xl max-w-2xl mx-4 relative shadow-2xl border-2 border-orange-200 transform-gpu"
             onClick={(e) => e.stopPropagation()}
+            style={{ willChange: 'transform' }}
           >
             <motion.button
               onClick={() => setVideoPlaying(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-orange-500 transition-colors"
-              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
+              style={{ willChange: 'transform' }}
             >
               ✕
             </motion.button>
@@ -279,15 +293,15 @@ export function Hero() {
               transition={{ delay: 0.4 }}
             >
               <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0]
+                animate={prefersReducedMotion ? {} : {
+                  scale: [1, 1.05, 1],
                 }}
                 transition={{
-                  duration: 3,
+                  duration: 4,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
+                style={{ willChange: 'transform' }}
               >
                 <Play className="w-20 h-20 text-orange-500" />
               </motion.div>

@@ -1,43 +1,21 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { GoogleLoginButton } from '@/components/ui/GoogleLoginButton';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Mock login - in a real app, this would call the API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, we'll just show a success message
-      toast({
-        title: "Login Successful",
-        description: "You have been logged in successfully.",
-      });
-      
-      // Redirect to home page
-      navigate('/home');
-    } catch {
-      toast({
-        title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await login(email, password);
   };
 
   return (
@@ -74,16 +52,31 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
-          
+
+          <div className="mt-4 relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <GoogleLoginButton />
+          </div>
+
           <div className="mt-4 text-center text-sm">
             <Link to="/auth/forgot-password" className="text-primary hover:underline">
               Forgot your password?
             </Link>
           </div>
-          
+
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600">Don't have an account? </span>
             <Link to="/auth/signup" className="text-primary font-medium hover:underline">

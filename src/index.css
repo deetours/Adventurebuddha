@@ -11,7 +11,7 @@
   --color-muted: #6B7280;
   --color-surface: #F8FAFC;
   --radius-lg: 1rem;
-  
+
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
@@ -19,7 +19,7 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
   --primary: 24 100% 50%;
-  --primary-foreground: 210 40% 98%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 210 40% 96%;
   --secondary-foreground: 222.2 84% 4.9%;
   --muted: 210 40% 96%;
@@ -65,12 +65,84 @@ body {
   font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
 }
 
+/* Performance optimizations for animations */
+* {
+  /* Enable hardware acceleration for better animation performance */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize animated elements */
+[style*="will-change"] {
+  /* Elements with will-change hint get GPU acceleration */
+  transform: translateZ(0);
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+
+  /* Disable transform optimizations for reduced motion */
+  * {
+    transform: none !important;
+    backface-visibility: visible !important;
+    perspective: none !important;
+  }
+}
+
+/* GPU-accelerated animations */
+@keyframes smoothFadeIn {
+  from {
+    opacity: 0;
+    transform: translateZ(0) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0) translateY(0);
+  }
+}
+
+@keyframes smoothScale {
+  from {
+    transform: translateZ(0) scale(0.8);
+  }
+  to {
+    transform: translateZ(0) scale(1);
+  }
+}
+
+/* Utility classes for performance */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.smooth-animation {
+  animation-fill-mode: both;
+  transform: translateZ(0);
+}
+
+/* Enhanced hover transitions for cards */
+.card-hover-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-transition:hover {
+  transform: translateZ(0) translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .seat {

@@ -1,23 +1,19 @@
-import React, { useState, Suspense, lazy, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, CheckCircle, Phone, MessageCircle, TrendingUp, MapPin, Users, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Label } from '../components/ui/label';
 import { Hero } from '../components/home/Hero';
 import { TripStats } from '../components/home/TripStats';
 import { TripCard } from '../components/trips/TripCard';
 import { InteractiveSearch } from '../components/home/InteractiveSearch';
+import { FeaturedDestinations } from '../components/home/FeaturedDestinations';
+import { NewsletterSignup } from '../components/home/NewsletterSignup';
+import { TestimonialsCarousel } from '../components/home/TestimonialsCarousel';
+import { LeadCaptureModal } from '../components/home/LeadCaptureModal';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../lib/api';
 import { toast } from '../components/ui/use-toast';
-
-// Lazy load heavy components for better performance
-const FeaturedDestinations = lazy(() => import('../components/home/FeaturedDestinations').then(module => ({ default: module.FeaturedDestinations })));
-const NewsletterSignup = lazy(() => import('../components/home/NewsletterSignup').then(module => ({ default: module.NewsletterSignup })));
-const TestimonialsCarousel = lazy(() => import('../components/home/TestimonialsCarousel').then(module => ({ default: module.TestimonialsCarousel })));
 
 // Performance monitoring hook
 const usePerformanceMonitor = () => {
@@ -59,46 +55,37 @@ const usePerformanceMonitor = () => {
 
 export default function LandingPage() {
   const fps = usePerformanceMonitor();
-  const [email, setEmail] = useState('');
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Performance-based rendering decisions
   const enableHeavyAnimations = fps >= 50;
   const enableBackgroundAnimations = fps >= 40;
+
+  // Auto-open lead modal after 10 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const hasSeenModal = localStorage.getItem('leadModalShown');
+      if (!hasSeenModal) {
+        setIsLeadModalOpen(true);
+        localStorage.setItem('leadModalShown', 'true');
+      }
+    }, 10000);
+
+    // Listen for custom event to open modal
+    const handleOpenLeadModal = () => setIsLeadModalOpen(true);
+    window.addEventListener('openLeadModal', handleOpenLeadModal);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('openLeadModal', handleOpenLeadModal);
+    };
+  }, []);
 
   // Fetch featured trips
   const { data: featuredTrips = [] } = useQuery({
     queryKey: ['featured-trips'],
     queryFn: () => apiClient.getTrips({ tags: ['featured'] }),
   });
-
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setIsLoading(true);
-
-    try {
-      // Mock email subscription with delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      toast({
-        title: "Thanks for subscribing!",
-        description: "We'll keep you updated on amazing travel deals.",
-      });
-      setEmail('');
-      setIsLeadModalOpen(false);
-    } catch {
-      toast({
-        title: "Subscription Failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSearch = (query: string) => {
     // In a real app, this would trigger a search
@@ -215,23 +202,7 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Destinations */}
-      <Suspense fallback={
-        <div className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-8"></div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[1,2,3].map(i => (
-                  <div key={i} className="h-64 bg-gray-300 rounded-lg"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      }>
-        <FeaturedDestinations />
-      </Suspense>
+      <FeaturedDestinations />
 
       {/* Features Section - Gamified */}
       <section className="py-20 bg-gradient-to-br from-white via-orange-50/50 to-white relative overflow-hidden">
@@ -537,34 +508,10 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Carousel */}
-      <Suspense fallback={
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-8"></div>
-              <div className="h-48 bg-gray-300 rounded-lg"></div>
-            </div>
-          </div>
-        </section>
-      }>
-        <TestimonialsCarousel />
-      </Suspense>
+      <TestimonialsCarousel />
 
       {/* Newsletter Signup */}
-      <Suspense fallback={
-        <section className="py-16 bg-gradient-to-r from-orange-50 to-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-8"></div>
-              <div className="h-32 bg-gray-300 rounded-lg"></div>
-            </div>
-          </div>
-        </section>
-      }>
-        <NewsletterSignup />
-      </Suspense>
+      <NewsletterSignup />
 
       {/* Enhanced Lead Capture CTA */}
       <section className="relative py-20 bg-gradient-to-br from-orange-600 via-orange-700 to-orange-800 text-white overflow-hidden">
@@ -711,62 +658,25 @@ export default function LandingPage() {
             transition={{ delay: 0.6, duration: 0.6 }}
             className="flex flex-col lg:flex-row gap-6 justify-center items-center max-w-2xl mx-auto"
           >
-            {/* Primary CTA - Email Subscription */}
+            {/* Primary CTA - Open Lead Modal */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex-1 max-w-sm"
             >
-              <Dialog open={isLeadModalOpen} onOpenChange={setIsLeadModalOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    size="lg"
-                    className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg py-4 px-8 rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 group flex items-center justify-center gap-3"
-                  >
-                    <span>📧 Get Exclusive Travel Updates</span>
-                    <motion.span
-                      animate={{ x: [0, 3, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      →
-                    </motion.span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-center">
-                      🚀 Unlock Exclusive Adventures
-                    </DialogTitle>
-                    <p className="text-center text-gray-600">
-                      Get 25% off your first booking + insider travel tips
-                    </p>
-                  </DialogHeader>
-                  <form onSubmit={handleEmailSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-left">Email Address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="text-lg py-3"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-lg py-3 rounded-full font-bold"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Sending...' : '🎉 Claim My 25% Discount'}
-                    </Button>
-                    <p className="text-xs text-gray-500 text-center">
-                      No spam, unsubscribe anytime. We respect your privacy.
-                    </p>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <Button
+                size="lg"
+                onClick={() => setIsLeadModalOpen(true)}
+                className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg py-4 px-8 rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 group flex items-center justify-center gap-3"
+              >
+                <span>📧 Get Exclusive Travel Updates</span>
+                <motion.span
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  →
+                </motion.span>
+              </Button>
             </motion.div>
 
             {/* Secondary CTAs */}
@@ -850,6 +760,16 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={isLeadModalOpen}
+        onClose={() => setIsLeadModalOpen(false)}
+        onLeadCaptured={(leadData) => {
+          console.log('Lead captured:', leadData);
+          // You can add additional logic here like analytics tracking
+        }}
+      />
     </div>
   );
 }

@@ -5,13 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PaymentMethodChooser } from '@/components/payment/PaymentMethodChooser';
 import { UPIQRCode } from '@/components/payment/UPIQRCode';
 import { ScreenshotUploader } from '@/components/payment/ScreenshotUploader';
-import { Loader } from '@/components/ui/loader';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function PaymentPage() {
   const { bookingId } = useParams<{ bookingId: string }>();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
-  const [isLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -29,14 +27,6 @@ export default function PaymentPage() {
     // In a real app, this would upload the file to the server
     console.log('Uploading file:', file.name);
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader message="Processing payment..." />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

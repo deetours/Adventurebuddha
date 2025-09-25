@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom';
 import { AnimatedTripCard } from '../components/trips/AnimatedTripCard';
 import { AdvancedFilters } from '../components/trips/AdvancedFilters';
 import { InteractiveMap } from '../components/trips/InteractiveMap';
-import { Loader } from '../components/ui/loader';
 import { Button } from '../components/ui/button';
 import { apiClient } from '../lib/api';
 import type { FiltersState } from '../lib/types';
@@ -27,7 +26,7 @@ export default function TripsPage() {
   }));
 
   // Fetch trips with filters
-  const { data: trips = [], isLoading, error } = useQuery({
+  const { data: trips = [], error } = useQuery({
     queryKey: ['trips', filters],
     queryFn: () => apiClient.getTrips(filters),
   });
@@ -88,14 +87,6 @@ export default function TripsPage() {
   }, [filteredTrips, page]);
 
   const totalPages = Math.ceil(filteredTrips.length / itemsPerPage);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Loader />
-      </div>
-    );
-  }
 
   if (error) {
     return (

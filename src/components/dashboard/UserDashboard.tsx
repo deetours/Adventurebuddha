@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -62,35 +62,35 @@ export function UserDashboard() {
   const { dashboardData, isConnected } = useRealtimeDashboard();
 
   // API queries
-  const { data: overviewData, isLoading: overviewLoading } = useQuery({
+  const { data: overviewData } = useQuery({
     queryKey: ['user-overview'],
     queryFn: apiClient.getUserOverview,
     refetchInterval: 30000,
   });
 
-  const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
+  const { data: bookingsData } = useQuery({
     queryKey: ['user-bookings'],
     queryFn: () => apiClient.getUserBookings(),
     refetchInterval: 30000,
   });
 
-  const { data: insightsData, isLoading: insightsLoading } = useQuery({
+  const { data: insightsData } = useQuery({
     queryKey: ['user-insights'],
     queryFn: apiClient.getTravelInsights,
     refetchInterval: 60000,
   });
 
-  const { data: notificationSettings, isLoading: settingsLoading } = useQuery({
+  const { data: notificationSettings } = useQuery({
     queryKey: ['notification-settings'],
     queryFn: apiClient.getNotificationSettings,
   });
 
-  const { data: travelPreferences, isLoading: preferencesLoading } = useQuery({
+  const { data: travelPreferences } = useQuery({
     queryKey: ['travel-preferences'],
     queryFn: apiClient.getTravelPreferences,
   });
 
-  const { data: favoriteTrips, isLoading: favoritesLoading } = useQuery({
+  const { data: favoriteTrips } = useQuery({
     queryKey: ['favorite-trips'],
     queryFn: apiClient.getFavoriteTrips,
   });
@@ -317,12 +317,6 @@ export function UserDashboard() {
                       <Button className="mt-4">Book Your Next Trip</Button>
                     </div>
                   )}
-                  {bookingsLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
@@ -346,15 +340,9 @@ export function UserDashboard() {
                       <p className="text-sm text-muted-foreground">{insight.title || 'Insight'}</p>
                     </div>
                   ))}
-                  {travelInsights.length === 0 && !insightsLoading && (
+                  {travelInsights.length === 0 && (
                     <div className="col-span-3 text-center text-muted-foreground py-4">
                       No travel insights available
-                    </div>
-                  )}
-                  {insightsLoading && (
-                    <div className="col-span-3 flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading insights...</span>
                     </div>
                   )}
                 </div>
@@ -409,12 +397,6 @@ export function UserDashboard() {
                       <Button>Explore Trips</Button>
                     </div>
                   )}
-                  {bookingsLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading bookings...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
@@ -448,18 +430,12 @@ export function UserDashboard() {
                         </div>
                       </div>
                     ))}
-                    {pastBookings.length === 0 && !bookingsLoading && (
+                    {pastBookings.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground">
                         No past trips yet
                       </div>
                     )}
                   </div>
-                  {bookingsLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
@@ -500,17 +476,11 @@ export function UserDashboard() {
                       </div>
                     </div>
                   ))}
-                  {(!favoriteTrips || favoriteTrips.length === 0) && !favoritesLoading && (
+                  {(!favoriteTrips || favoriteTrips.length === 0) && (
                     <div className="col-span-2 text-center py-8 text-muted-foreground">
                       <Star className="h-12 w-12 mx-auto mb-4" />
                       <p>No favorite trips yet</p>
                       <Button className="mt-4">Explore Trips</Button>
-                    </div>
-                  )}
-                  {favoritesLoading && (
-                    <div className="col-span-2 flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading favorites...</span>
                     </div>
                   )}
                 </div>
@@ -590,12 +560,6 @@ export function UserDashboard() {
                       }
                     />
                   </div>
-                  {settingsLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading settings...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
@@ -638,12 +602,6 @@ export function UserDashboard() {
                   </div>
 
                   <Button className="w-full mt-4">Update Preferences</Button>
-                  {preferencesLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading preferences...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>

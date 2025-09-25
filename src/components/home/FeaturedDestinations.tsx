@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -30,57 +30,20 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // 3D tilt effect
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [15, -15]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-15, 15]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    x.set((e.clientX - centerX) / rect.width);
-    y.set((e.clientY - centerY) / rect.height);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50, rotateY: -15 }}
-      whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{
-        delay: index * 0.15,
-        type: "spring",
-        stiffness: 100,
-        damping: 15
+        delay: index * 0.1,
+        duration: 0.5
       }}
-      whileHover={{ y: -20 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      whileHover={{ y: -10 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d"
-      }}
       className="group relative cursor-pointer"
+      data-destination-card
     >
       <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl transform-gpu">
         {/* Front Card */}
@@ -93,43 +56,31 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
               transition={{ duration: 0.3 }}
               className="absolute inset-0"
             >
-              {/* Background Image with Parallax */}
-              <motion.div
-                className="absolute inset-0"
-                animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
-                transition={{ duration: 0.6 }}
-              >
+              {/* Background Image */}
+              <div className="absolute inset-0">
                 <img
                   src={destination.image}
                   alt={destination.name}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              </motion.div>
+              </div>
 
               {/* Floating Elements */}
-              <motion.div
-                className="absolute top-4 left-4 z-20"
-                animate={isHovered ? { scale: 1.1, x: 5 } : { scale: 1, x: 0 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+              <div className="absolute top-4 left-4 z-20">
                 <Badge className="bg-white/90 text-gray-800 border-0 shadow-lg backdrop-blur-sm">
                   <MapPin className="h-3 w-3 mr-1" />
                   {destination.country}
                 </Badge>
-              </motion.div>
+              </div>
 
               {/* Rating Badge */}
-              <motion.div
-                className="absolute top-4 right-4 z-20"
-                animate={isHovered ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+              <div className="absolute top-4 right-4 z-20">
                 <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center shadow-lg">
                   <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
                   <span className="text-sm font-bold text-gray-800">{destination.rating}</span>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Like Button */}
               <motion.button
@@ -169,26 +120,15 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
 
               {/* Content Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                <motion.h3
-                  className="text-2xl font-bold mb-2"
-                  animate={isHovered ? { y: -5 } : { y: 0 }}
-                >
+                <h3 className="text-2xl font-bold mb-2">
                   {destination.name}
-                </motion.h3>
+                </h3>
 
-                <motion.p
-                  className="text-white/90 mb-4 line-clamp-2"
-                  animate={isHovered ? { y: -3 } : { y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
+                <p className="text-white/90 mb-4 line-clamp-2">
                   {destination.description}
-                </motion.p>
+                </p>
 
-                <motion.div
-                  className="flex items-center justify-between"
-                  animate={isHovered ? { y: -3 } : { y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-1" />
@@ -200,23 +140,18 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                     </div>
                   </div>
 
-                  <motion.div
-                    animate={isHovered ? { x: -5 } : { x: 0 }}
-                    transition={{ delay: 0.3 }}
+                  <Button
+                    size="sm"
+                    className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsFlipped(true);
+                    }}
                   >
-                    <Button
-                      size="sm"
-                      className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsFlipped(true);
-                      }}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Details
-                    </Button>
-                  </motion.div>
-                </motion.div>
+                    <Eye className="h-4 w-4 mr-1" />
+                    Details
+                  </Button>
+                </div>
               </div>
 
               {/* Hover Glow Effect */}
@@ -336,19 +271,6 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
           )}
         </AnimatePresence>
       </div>
-
-      {/* Magnetic Effect Shadow */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-3xl blur-xl -z-10"
-        animate={isHovered ? {
-          scale: 1.1,
-          opacity: 0.6
-        } : {
-          scale: 1,
-          opacity: 0
-        }}
-        transition={{ duration: 0.3 }}
-      />
     </motion.div>
   );
 }
@@ -420,7 +342,10 @@ export function FeaturedDestinations() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-white via-orange-50/30 to-white relative overflow-hidden">
+    <section 
+      id="featured-destinations"
+      className="py-20 bg-gradient-to-br from-white via-orange-50/30 to-white relative overflow-hidden transition-all duration-500"
+    >
       {/* Animated Background */}
       <div className="absolute inset-0">
         <motion.div

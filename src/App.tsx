@@ -1,36 +1,35 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Suspense, lazy } from 'react';
 import { AppShell } from './components/layout/AppShell';
 import { ChainPromptingProvider } from './contexts/ChainPromptingContext';
+import { AuthProvider } from './contexts/AuthContext';
 
-// Lazy load heavy components for better performance
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const TripsPage = lazy(() => import('./pages/TripsPage'));
-const TripDetailsPage = lazy(() => import('./pages/TripDetailsPage'));
-const SeatSelectionPage = lazy(() => import('./pages/SeatSelectionPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const SignupPage = lazy(() => import('./pages/SignupPage'));
-const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const BookingsPage = lazy(() => import('./pages/BookingsPage'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const BlogPage = lazy(() => import('./pages/BlogPage'));
-const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const RefundPage = lazy(() => import('./pages/RefundPage'));
-const HelpPage = lazy(() => import('./pages/HelpPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const PaymentPage = lazy(() => import('./pages/PaymentPage'));
-const BookingConfirmationPage = lazy(() => import('./pages/BookingConfirmationPage'));
-const SupportPage = lazy(() => import('./pages/SupportPage'));
-const AdminPage = lazy(() => import('./pages/AdminPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-import { config } from './lib/config';
+// Import all components directly for instant loading
+import LandingPage from './pages/LandingPage';
+import TripsPage from './pages/TripsPage';
+import TripDetailsPage from './pages/TripDetailsPage';
+import SeatSelectionPage from './pages/SeatSelectionPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import DashboardPage from './pages/DashboardPage';
+import BookingsPage from './pages/BookingsPage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
+import AboutPage from './pages/AboutPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import RefundPage from './pages/RefundPage';
+import HelpPage from './pages/HelpPage';
+import ContactPage from './pages/ContactPage';
+import PaymentPage from './pages/PaymentPage';
+import BookingConfirmationPage from './pages/BookingConfirmationPage';
+import SupportPage from './pages/SupportPage';
+import AdminPage from './pages/AdminPage';
+import NotFoundPage from './pages/NotFoundPage';
+import GoogleCallbackPage from './pages/GoogleCallbackPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -51,8 +50,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ChainPromptingProvider>
-        <Router>
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+        <AuthProvider>
+          <Router>
             <Routes>
               <Route path="/" element={<AppShell />}>
                 <Route index element={<LandingPage />} />
@@ -70,6 +69,7 @@ function App() {
                   <Route path="login" element={<LoginPage />} />
                   <Route path="signup" element={<SignupPage />} />
                   <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="google/callback" element={<GoogleCallbackPage />} />
                 </Route>
                 <Route path="home" element={<DashboardPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
@@ -84,9 +84,8 @@ function App() {
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>
-          </Suspense>
-        </Router>
-        {!config.STORYBOOK_MODE && <ReactQueryDevtools initialIsOpen={false} />}
+          </Router>
+        </AuthProvider>
       </ChainPromptingProvider>
     </QueryClientProvider>
   );

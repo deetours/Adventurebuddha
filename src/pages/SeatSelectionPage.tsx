@@ -12,7 +12,6 @@ import { SeatMapRenderer } from '@/components/booking/SeatMapRenderer';
 import { SeatLegend } from '@/components/booking/SeatLegend';
 import { SeatSelectionTimer } from '@/components/booking/SeatSelectionTimer';
 import { BookingSummaryPanel } from '@/components/booking/BookingSummaryPanel';
-import { Loader } from '@/components/ui/loader';
 import { useToast } from '@/components/ui/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Slot, Seat } from '@/lib/types';
@@ -30,7 +29,7 @@ export default function SeatSelectionPage() {
   } = useBookingStore();
 
   // Fetch slot details and seat map
-  const { data: slotData, isLoading, error } = useQuery({
+  const { data: slotData, error } = useQuery({
     queryKey: ['slot', slotId],
     queryFn: () => apiClient.getSeatMap(slotId!),
     enabled: !!slotId,
@@ -91,28 +90,6 @@ export default function SeatSelectionPage() {
       });
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <Loader />
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-lg font-medium text-gray-700"
-          >
-            Loading 3D Seat Map...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
 
   // Mock slot data - in real app this would come from API
   const getMockSlotData = (count: number) => {

@@ -65,25 +65,25 @@ export function AdminDashboard() {
   const { dashboardData, activities, isConnected, requestUpdate } = useRealtimeDashboard();
 
   // API queries
-  const { data: overviewData, isLoading: overviewLoading } = useQuery({
+  const { data: overviewData } = useQuery({
     queryKey: ['admin-overview'],
     queryFn: apiClient.getAdminOverview,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  const { data: recentBookingsData, isLoading: bookingsLoading } = useQuery({
+  const { data: recentBookingsData } = useQuery({
     queryKey: ['recent-bookings'],
     queryFn: apiClient.getRecentBookings,
     refetchInterval: 30000,
   });
 
-  const { data: tripPerformanceData, isLoading: performanceLoading } = useQuery({
+  const { data: tripPerformanceData } = useQuery({
     queryKey: ['trip-performance'],
     queryFn: apiClient.getTripPerformance,
     refetchInterval: 60000, // Refetch every minute
   });
 
-  const { data: agentStatusData, isLoading: agentLoading } = useQuery({
+  const { data: agentStatusData } = useQuery({
     queryKey: ['agent-status'],
     queryFn: apiClient.getAgentStatus,
     refetchInterval: 30000,
@@ -272,14 +272,8 @@ export function AdminDashboard() {
                       </div>
                     </div>
                   ))}
-                  {recentBookings.length === 0 && !bookingsLoading && (
+                  {recentBookings.length === 0 && (
                     <p className="text-center text-muted-foreground py-4">No recent bookings</p>
-                  )}
-                  {bookingsLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -304,14 +298,8 @@ export function AdminDashboard() {
                       </div>
                     </div>
                   ))}
-                  {tripPerformance.length === 0 && !performanceLoading && (
+                  {tripPerformance.length === 0 && (
                     <p className="text-center text-muted-foreground py-4">No trip performance data</p>
-                  )}
-                  {performanceLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -420,12 +408,6 @@ export function AdminDashboard() {
                     <span className="text-sm">Active Agents</span>
                     <span className="font-medium">{agentMetrics.length}</span>
                   </div>
-                  {agentLoading && (
-                    <div className="flex items-center justify-center py-2">
-                      <RefreshCw className="h-3 w-3 animate-spin" />
-                      <span className="ml-2 text-xs text-muted-foreground">Loading...</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
@@ -459,14 +441,8 @@ export function AdminDashboard() {
                       </span>
                     </div>
                   ))}
-                  {agentMetrics.length === 0 && !agentLoading && (
+                  {agentMetrics.length === 0 && (
                     <p className="text-center text-muted-foreground py-4">No agent data available</p>
-                  )}
-                  {agentLoading && (
-                    <div className="flex items-center justify-center py-4">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-                    </div>
                   )}
                 </CardContent>
               </Card>

@@ -1,55 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { GoogleLoginButton } from '@/components/ui/GoogleLoginButton';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { register, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Mock signup - in a real app, this would call the API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, we'll just show a success message
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully.",
-      });
-      
-      // Redirect to login page
-      navigate('/auth/login');
-    } catch {
-      toast({
-        title: "Signup Failed",
-        description: "An error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await register(name, email, password, confirmPassword);
   };
 
   return (
@@ -111,7 +78,22 @@ export default function SignupPage() {
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
-          
+
+          <div className="mt-4 relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <GoogleLoginButton />
+          </div>
+
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600">Already have an account? </span>
             <Link to="/auth/login" className="text-primary font-medium hover:underline">
