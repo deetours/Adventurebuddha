@@ -47,7 +47,7 @@ export default function AboutPage() {
   ];
 
   // Chain prompting enhanced content - temporarily disabled until real API integration
-  const enhancedStory = `Founded in 2009 by a group of passionate travelers, Adventure Buddha began with a simple mission: to create meaningful travel experiences that connect people with the world around them.
+  const enhancedStory = `Founded in 2019 by a group of passionate travelers, Adventure Buddha began with a simple mission: to create meaningful travel experiences that connect people with the world around them.
 
 What started as a small team organizing trekking expeditions in the Himalayas has grown into a leading adventure travel company, curating transformative journeys across India and beyond.
 
@@ -253,7 +253,7 @@ Today, we're proud to have served over 10,000 travelers, creating memories that 
 
                   <div className="space-y-4">
                     {[
-                      { year: '2009', event: 'Founded', status: 'completed' },
+                    { year: '2019', event: 'Founded', status: 'completed' },
                       { year: '2012', event: '100 Trips', status: 'completed' },
                       { year: '2015', event: 'Team Growth', status: 'completed' },
                       { year: '2018', event: 'Recognition', status: 'completed' },
