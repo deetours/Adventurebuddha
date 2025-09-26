@@ -65,7 +65,7 @@ Today, we're proud to have served over 10,000 travelers, creating memories that 
         ]}
         posterSrc="/images/about-hero-poster.jpg"
         title="About Adventure Buddha"
-        subtitle="Crafting unforgettable journeys since 2009"
+        subtitle="Founded in 2018 by a group of passionate travelers, Adventure Buddha began with a simple mission"
         ctaText="Explore Our Story"
         onCtaClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })}
       />
@@ -253,12 +253,12 @@ Today, we're proud to have served over 10,000 travelers, creating memories that 
 
                   <div className="space-y-4">
                     {[
-                    { year: '2019', event: 'Founded', status: 'completed' },
-                      { year: '2012', event: '100 Trips', status: 'completed' },
-                      { year: '2015', event: 'Team Growth', status: 'completed' },
-                      { year: '2018', event: 'Recognition', status: 'completed' },
-                      { year: '2021', event: 'Digital Era', status: 'completed' },
-                      { year: '2024', event: 'Global Reach', status: 'active' }
+                      { year: '2018', event: 'Founded', status: 'completed' },
+                      { year: '2020', event: '100 Trips', status: 'completed' },
+                      { year: '2021', event: 'Team Growth', status: 'completed' },
+                      { year: '2023', event: 'Recognition', status: 'completed' },
+                      { year: '2024', event: 'Digital Era', status: 'completed' },
+                      { year: '2025', event: 'Global Reach', status: 'active' }
                     ].map((milestone, index) => (
                       <motion.div
                         key={index}

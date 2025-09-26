@@ -25,7 +25,7 @@ export function InteractiveTimeline() {
     },
     {
       year: '2020',
-      title: 'First 100 Trips',
+      title: '100 Trips',
       description: 'Reached our first major milestone with 100 successful adventures.',
       icon: MapPin,
       details: 'Expanded our operations to include beach destinations and cultural tours across India.',
@@ -33,7 +33,7 @@ export function InteractiveTimeline() {
     },
     {
       year: '2021',
-      title: 'Team Expansion',
+      title: 'Team Growth',
       description: 'Grew our team to 20 dedicated adventure specialists.',
       icon: Users,
       details: 'Hired experienced guides and travel experts, establishing our reputation for quality service.',
@@ -41,7 +41,7 @@ export function InteractiveTimeline() {
     },
     {
       year: '2023',
-      title: 'National Recognition',
+      title: 'Recognition',
       description: 'Received awards for sustainable tourism practices.',
       icon: Award,
       details: 'Recognized by national travel organizations for our commitment to responsible tourism.',
@@ -49,7 +49,7 @@ export function InteractiveTimeline() {
     },
     {
       year: '2024',
-      title: 'Digital Transformation',
+      title: 'Digital Era',
       description: 'Launched our online booking platform and mobile app.',
       icon: Calendar,
       details: 'Made adventure travel accessible to everyone through technology and user-friendly interfaces.',
