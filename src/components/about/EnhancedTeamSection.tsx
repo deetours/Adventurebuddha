@@ -39,16 +39,15 @@ export function EnhancedTeamSection() {
     },
     {
       id: 2,
-      name: 'Priya Sharma',
+      name: 'Suraj Kumar',
       position: 'Head of Operations',
       bio: 'Expert in sustainable tourism and cultural immersion experiences. Ensures every trip is perfectly orchestrated.',
-      image: '/images/team/priya.jpg',
+      image: '/suraj.jpeg',
       expertise: ['Cultural Tourism', 'Sustainable Travel', 'Operations Management'],
       experience: '15+ years',
       social: {
-        linkedin: 'https://linkedin.com/in/priya-sharma',
-        twitter: 'https://twitter.com/priya_travels',
-        email: 'priya@adventurebuddhha.com'
+        linkedin: 'https://linkedin.com/in/suraj-kumar',
+        email: 'suraj@adventurebuddhha.com'
       },
       achievements: ['Green Tourism Award', 'Operations Excellence', '100% Client Satisfaction']
     },
