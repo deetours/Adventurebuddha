@@ -25,10 +25,10 @@ export function EnhancedTeamSection() {
   const teamMembers: TeamMember[] = [
     {
       id: 1,
-      name: 'Rajesh Kumar',
+      name: 'Akshay TR',
       position: 'Founder & CEO',
       bio: 'Passionate mountaineer with 20+ years of adventure travel experience. Led expeditions across 7 continents.',
-      image: '/images/team/rajesh.jpg',
+      image: '/akshay.jpeg',
       expertise: ['Mountain Trekking', 'Expedition Leadership', 'Risk Management'],
       experience: '20+ years',
       social: {

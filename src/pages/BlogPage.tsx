@@ -46,7 +46,7 @@ export default function BlogPage() {
       title: 'Essential Gear for Your Next Adventure',
       excerpt: 'Packing the right gear can make or break your adventure. Here\'s our comprehensive guide to essential equipment for every traveler.',
       content: '',
-      author: 'Rajesh Kumar',
+      author: 'Akshay TR',
       date: '2024-05-10',
       tags: ['gear', 'packing', 'tips'],
       image: 'https://images.pexels.com/photos/1475340/pexels-photo-1475340.jpeg',
