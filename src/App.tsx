@@ -56,7 +56,7 @@ function App() {
               <Route path="/" element={<AppShell />}>
                 <Route index element={<LandingPage />} />
                 <Route path="trips" element={<TripsPage />} />
-                <Route path="trips/:id" element={<TripDetailsPage />} />
+                <Route path="trips/:slug" element={<TripDetailsPage />} />
                 <Route path="about" element={<AboutPage />} />
                 <Route path="blog" element={<BlogPage />} />
                 <Route path="blog/:id" element={<BlogPostPage />} />

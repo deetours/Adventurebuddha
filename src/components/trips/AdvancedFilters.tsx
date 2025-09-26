@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, SlidersHorizontal, MapPin, Calendar, DollarSign, Star } from 'lucide-react';
+import { X, SlidersHorizontal, Calendar, DollarSign, Star } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Slider } from '../ui/slider';
 import { Checkbox } from '../ui/checkbox';
@@ -26,14 +26,6 @@ export function AdvancedFilters({
 
   const difficultyLevels = ['Easy', 'Moderate', 'Challenging', 'Expert'];
   const durationOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-  const activityTags = [
-    'Trekking', 'Cultural', 'Wildlife', 'Adventure', 'Spiritual', 'Photography',
-    'Camping', 'Rafting', 'Paragliding', 'Scuba Diving', 'Skiing', 'Cycling'
-  ];
-  const regions = [
-    'Himalayas', 'Kashmir', 'Rajasthan', 'Kerala', 'Goa', 'Ladakh',
-    'Uttarakhand', 'Sikkim', 'Arunachal Pradesh', 'Meghalaya'
-  ];
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
@@ -44,7 +36,7 @@ export function AdvancedFilters({
     const resetFilters: FiltersState = {
       search: '',
       priceRange: [0, 100000],
-      tags: [],
+      featured: undefined,
       difficulty: undefined,
       duration: undefined,
     };
@@ -68,10 +60,10 @@ export function AdvancedFilters({
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span>Advanced Filters</span>
-            {(filters.tags.length > 0 || filters.difficulty || filters.duration) && (
+            {(filters.featured || filters.difficulty || filters.duration) && (
               <Badge variant="secondary" className="ml-2">
                 {[
-                  filters.tags.length,
+                  filters.featured ? 1 : 0,
                   filters.difficulty ? 1 : 0,
                   filters.duration ? 1 : 0
                 ].reduce((a, b) => a + b, 0)}
@@ -84,7 +76,7 @@ export function AdvancedFilters({
           </div>
         </div>
 
-        {(filters.tags.length > 0 || filters.difficulty || filters.duration) && (
+        {(filters.featured || filters.difficulty || filters.duration) && (
           <Button variant="ghost" size="sm" onClick={handleResetFilters}>
             Clear all
           </Button>
@@ -93,7 +85,7 @@ export function AdvancedFilters({
 
       {/* Active Filters Display */}
       <AnimatePresence>
-        {(filters.tags.length > 0 || filters.difficulty || filters.duration) && (
+        {(filters.featured || filters.difficulty || filters.duration) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -122,18 +114,15 @@ export function AdvancedFilters({
               </Badge>
             )}
 
-            {filters.tags.map(tag => (
-              <Badge key={tag} variant="secondary" className="flex items-center space-x-1">
-                <span>{tag}</span>
+            {filters.featured && (
+              <Badge variant="secondary" className="flex items-center space-x-1">
+                <span>{filters.featured === 'featured' ? 'Featured' : 'Popular'}</span>
                 <X
                   className="w-3 h-3 cursor-pointer"
-                  onClick={() => onFiltersChange({
-                    ...filters,
-                    tags: filters.tags.filter(t => t !== tag)
-                  })}
+                  onClick={() => onFiltersChange({ ...filters, featured: undefined })}
                 />
               </Badge>
-            ))}
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -147,7 +136,33 @@ export function AdvancedFilters({
             exit={{ opacity: 0, height: 0 }}
             className="bg-white border rounded-lg p-6 mb-6 shadow-sm"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Featured/Popular Filter */}
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <Star className="w-4 h-4 mr-2" />
+                  Trip Type
+                </h4>
+                <div className="space-y-2">
+                  {[
+                    { value: 'featured', label: 'Featured Trips' },
+                    { value: 'popular', label: 'Popular Trips' }
+                  ].map(option => (
+                    <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
+                      <Checkbox
+                        checked={localFilters.featured === option.value}
+                        onCheckedChange={(checked) =>
+                          updateLocalFilters({
+                            featured: checked ? option.value : undefined
+                          })
+                        }
+                      />
+                      <span className="text-sm">{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* Difficulty Filter */}
               <div>
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center">
@@ -189,51 +204,6 @@ export function AdvancedFilters({
                         }
                       />
                       <span className="text-sm">{days} days</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Activities Filter */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3">Activities</h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {activityTags.map(activity => (
-                    <label key={activity} className="flex items-center space-x-2 cursor-pointer">
-                      <Checkbox
-                        checked={localFilters.tags.includes(activity)}
-                        onCheckedChange={(checked) => {
-                          const newTags = checked
-                            ? [...localFilters.tags, activity]
-                            : localFilters.tags.filter(t => t !== activity);
-                          updateLocalFilters({ tags: newTags });
-                        }}
-                      />
-                      <span className="text-sm">{activity}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Regions Filter */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Regions
-                </h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {regions.map(region => (
-                    <label key={region} className="flex items-center space-x-2 cursor-pointer">
-                      <Checkbox
-                        checked={localFilters.tags.includes(region)}
-                        onCheckedChange={(checked) => {
-                          const newTags = checked
-                            ? [...localFilters.tags, region]
-                            : localFilters.tags.filter(t => t !== region);
-                          updateLocalFilters({ tags: newTags });
-                        }}
-                      />
-                      <span className="text-sm">{region}</span>
                     </label>
                   ))}
                 </div>

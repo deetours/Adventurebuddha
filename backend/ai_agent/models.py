@@ -291,6 +291,7 @@ class AIProcessingLog(models.Model):
             ('content_generation', 'Content Generation'),
             ('sentiment_analysis', 'Sentiment Analysis'),
             ('template_enhancement', 'Template Enhancement'),
+            ('rag_query', 'RAG Query'),
         ],
         help_text="Type of AI operation performed"
     )
@@ -341,3 +342,139 @@ class AIProcessingLog(models.Model):
 
     def __str__(self):
         return f"{self.operation_type} - {self.status} ({self.processed_at.strftime('%Y-%m-%d %H:%M')})"
+
+
+class VectorDocument(models.Model):
+    """
+    Document stored in vector database for RAG
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Document Content
+    content = models.TextField(help_text="The text content of the document")
+    title = models.CharField(max_length=500, help_text="Title or identifier for the document")
+    source_type = models.CharField(
+        max_length=50,
+        choices=[
+            ('trip', 'Trip'),
+            ('itinerary', 'Itinerary'),
+            ('faq', 'FAQ'),
+            ('policy', 'Policy'),
+            ('blog', 'Blog Post'),
+            ('custom', 'Custom Content'),
+        ],
+        help_text="Type of source content"
+    )
+
+    # Source Reference
+    source_id = models.CharField(max_length=100, help_text="ID of the source object (e.g., trip ID)")
+    source_url = models.URLField(blank=True, help_text="URL to the source content")
+
+    # Vector Embeddings
+    embedding = models.JSONField(
+        help_text="Vector embedding for similarity search",
+        null=True,
+        blank=True
+    )
+    embedding_model = models.CharField(
+        max_length=100,
+        default='text-embedding-ada-002',
+        help_text="Model used to generate the embedding"
+    )
+
+    # Metadata
+    metadata = models.JSONField(
+        default=dict,
+        help_text="Additional metadata for the document"
+    )
+    chunk_index = models.IntegerField(
+        default=0,
+        help_text="Index of this chunk within the source document"
+    )
+    total_chunks = models.IntegerField(
+        default=1,
+        help_text="Total number of chunks for this source document"
+    )
+
+    # Status
+    is_active = models.BooleanField(default=True, help_text="Whether this document is active for search")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['source_type', 'source_id']),
+            models.Index(fields=['is_active', 'source_type']),
+        ]
+        verbose_name = 'Vector Document'
+        verbose_name_plural = 'Vector Documents'
+
+    def __str__(self):
+        return f"{self.title} ({self.source_type})"
+
+
+class RAGQuery(models.Model):
+    """
+    Log of RAG queries for analytics and improvement
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Query Details
+    query = models.TextField(help_text="The user's query")
+    rewritten_query = models.TextField(
+        blank=True,
+        help_text="AI-rewritten version of the query for better search"
+    )
+
+    # Search Results
+    retrieved_documents = models.JSONField(
+        default=list,
+        help_text="List of retrieved document IDs with similarity scores"
+    )
+    context_used = models.TextField(
+        blank=True,
+        help_text="Context provided to the LLM"
+    )
+
+    # Response
+    response = models.TextField(help_text="AI-generated response")
+    response_quality = models.FloatField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        help_text="Quality score of the response (0.0 to 1.0)"
+    )
+
+    # Performance
+    search_time = models.FloatField(help_text="Time taken for vector search (seconds)")
+    generation_time = models.FloatField(help_text="Time taken for response generation (seconds)")
+    total_time = models.FloatField(help_text="Total processing time (seconds)")
+
+    # Feedback
+    user_rating = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Very Good'), (5, 'Excellent')],
+        help_text="User rating of the response"
+    )
+    user_feedback = models.TextField(blank=True, help_text="User feedback on the response")
+
+    # Metadata
+    session_id = models.CharField(max_length=100, help_text="Session identifier")
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='rag_queries'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'RAG Query'
+        verbose_name_plural = 'RAG Queries'
+
+    def __str__(self):
+        return f"RAG Query: {self.query[:50]}..."

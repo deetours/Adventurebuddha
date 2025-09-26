@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '../../lib/api';
+import type { Trip } from '../../lib/types';
 
 interface Destination {
   id: string;
@@ -59,7 +62,7 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img
-                  src={destination.image}
+                  src={destination.image || '/images/default-trip.jpg'}
                   alt={destination.name}
                   className="w-full h-full object-cover"
                 />
@@ -70,7 +73,7 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
               <div className="absolute top-4 left-4 z-20">
                 <Badge className="bg-white/90 text-gray-800 border-0 shadow-lg backdrop-blur-sm">
                   <MapPin className="h-3 w-3 mr-1" />
-                  {destination.country}
+                  {destination.country || 'India'}
                 </Badge>
               </div>
 
@@ -78,7 +81,7 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
               <div className="absolute top-4 right-4 z-20">
                 <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center shadow-lg">
                   <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                  <span className="text-sm font-bold text-gray-800">{destination.rating}</span>
+                  <span className="text-sm font-bold text-gray-800">4.5</span>
                 </div>
               </div>
 
@@ -132,11 +135,11 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                   <div className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-1" />
-                      {destination.tripsCount} trips
+                      {destination.tripsCount || 1} trips
                     </div>
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {destination.duration}
+                      {destination.duration || `${destination.duration || 3} days`}
                     </div>
                   </div>
 
@@ -190,22 +193,22 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between text-white/90">
                     <span className="font-medium">Best Time to Visit:</span>
-                    <span>{destination.bestTime}</span>
+                    <span>{destination.bestTime || 'Year-round'}</span>
                   </div>
                   <div className="flex items-center justify-between text-white/90">
                     <span className="font-medium">Duration:</span>
-                    <span>{destination.duration}</span>
+                    <span>{destination.duration || `${destination.duration || 3} days`}</span>
                   </div>
                   <div className="flex items-center justify-between text-white/90">
                     <span className="font-medium">Starting from:</span>
-                    <span className="font-bold">₹{destination.price.toLocaleString()}</span>
+                    <span className="font-bold">₹{destination.price?.toLocaleString() || 'Contact for price'}</span>
                   </div>
                 </div>
 
                 <div className="mb-6">
                   <h4 className="text-white font-semibold mb-3">Highlights:</h4>
                   <ul className="space-y-2">
-                    {destination.highlights.map((highlight, idx) => (
+                    {(destination.highlights || ['Adventure', 'Culture', 'Nature']).map((highlight, idx) => (
                       <motion.li
                         key={idx}
                         initial={{ opacity: 0, x: -20 }}
@@ -278,60 +281,26 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
 export function FeaturedDestinations() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const destinations: Destination[] = [
-    {
-      id: '1',
-      name: 'Ladakh',
-      country: 'India',
-      image: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-      rating: 4.8,
-      tripsCount: 24,
-      description: 'High-altitude desert with stunning mountain landscapes and ancient monasteries',
-      highlights: ['Pangong Lake', 'Magnetic Hill', 'Leh Palace', 'Nubra Valley'],
-      bestTime: 'Jun - Sep',
-      duration: '8-12 days',
-      price: 45000
-    },
-    {
-      id: '2',
-      name: 'Goa',
-      country: 'India',
-      image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-      rating: 4.6,
-      tripsCount: 18,
-      description: 'Beautiful beaches and vibrant nightlife with Portuguese colonial architecture',
-      highlights: ['Calangute Beach', 'Old Goa Churches', 'Dudhsagar Falls', 'Spice Plantations'],
-      bestTime: 'Nov - May',
-      duration: '5-7 days',
-      price: 25000
-    },
-    {
-      id: '3',
-      name: 'Kerala',
-      country: 'India',
-      image: 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-      rating: 4.7,
-      tripsCount: 21,
-      description: 'Backwaters, houseboats, and lush green landscapes with Ayurvedic traditions',
-      highlights: ['Alleppey Backwaters', 'Munnar Tea Gardens', 'Periyar Wildlife', 'Kochi Culture'],
-      bestTime: 'Sep - Mar',
-      duration: '7-10 days',
-      price: 35000
-    },
-    {
-      id: '4',
-      name: 'Himachal Pradesh',
-      country: 'India',
-      image: 'https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg',
-      rating: 4.9,
-      tripsCount: 15,
-      description: 'Snow-capped mountains and adventure activities in the Himalayan foothills',
-      highlights: ['Shimla Colonial', 'Manali Adventure', 'Kullu Valley', 'Rohtang Pass'],
-      bestTime: 'Mar - Jun',
-      duration: '6-9 days',
-      price: 30000
-    }
-  ];
+  // Fetch popular trips from API
+  const { data: popularTrips = [], isLoading, error } = useQuery({
+    queryKey: ['popular-trips'],
+    queryFn: () => apiClient.getTrips({ featured: 'popular' }),
+  });
+
+  // Convert trips to destination format
+  const destinations: Destination[] = popularTrips.slice(0, 4).map((trip: Trip) => ({
+    id: trip.id.toString(),
+    name: trip.title,
+    country: 'India',
+    image: trip.images?.[0] || '/images/default-trip.jpg',
+    rating: 4.5,
+    tripsCount: 1,
+    description: trip.description || trip.overview || 'Amazing adventure experience',
+    highlights: trip.tags || ['Adventure', 'Culture'],
+    bestTime: 'Year-round',
+    duration: `${trip.duration} days`,
+    price: trip.price
+  }));
 
   const categories = [
     { id: 'all', name: 'All Destinations' },
@@ -340,6 +309,31 @@ export function FeaturedDestinations() {
     { id: 'cultural', name: 'Cultural' },
     { id: 'adventure', name: 'Adventure' }
   ];
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-white via-orange-50/30 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading popular destinations...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-white via-orange-50/30 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-gray-600">Unable to load popular destinations at the moment.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 

@@ -304,7 +304,7 @@ class ApiClient {
   async getTrips(filters?: Partial<FiltersState>): Promise<Trip[]> {
     const queryParams = new URLSearchParams();
     if (filters?.search) queryParams.append('search', filters.search);
-    if (filters?.tags?.length) queryParams.append('tags', filters.tags.join(','));
+    if (filters?.featured) queryParams.append('featured', filters.featured);
     
     const endpoint = `/trips?${queryParams.toString()}`;
     return this.request<Trip[]>(endpoint);

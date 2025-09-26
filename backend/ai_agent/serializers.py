@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from .models import (
     AIAgent, AIConversation, AIMessageTemplate, AISentimentAnalysis,
-    AIContentGeneration, AIProcessingLog
+    AIContentGeneration, AIProcessingLog, VectorDocument, RAGQuery
 )
 
 
@@ -330,3 +330,74 @@ class BulkAISentimentSerializer(serializers.Serializer):
                 raise serializers.ValidationError(f"Message {i} content cannot be empty")
 
         return value
+
+
+class VectorDocumentSerializer(serializers.ModelSerializer):
+    """Serializer for Vector Document model"""
+
+    class Meta:
+        model = VectorDocument
+        fields = [
+            'id', 'content', 'title', 'source_type', 'source_id',
+            'source_url', 'embedding_model', 'metadata',
+            'chunk_index', 'total_chunks', 'is_active',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class RAGQuerySerializer(serializers.ModelSerializer):
+    """Serializer for RAG Query model"""
+
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+
+    class Meta:
+        model = RAGQuery
+        fields = [
+            'id', 'query', 'rewritten_query', 'retrieved_documents',
+            'context_used', 'response', 'response_quality',
+            'search_time', 'generation_time', 'total_time',
+            'user_rating', 'user_feedback', 'session_id',
+            'user', 'user_name', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+class RAGQueryRequestSerializer(serializers.Serializer):
+    """Serializer for RAG query requests"""
+
+    query = serializers.CharField(required=True, max_length=1000)
+    session_id = serializers.CharField(required=False, max_length=100)
+    top_k = serializers.IntegerField(required=False, default=5, min_value=1, max_value=20)
+
+    def validate_query(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Query cannot be empty")
+        return value.strip()
+
+
+class RAGQueryResponseSerializer(serializers.Serializer):
+    """Serializer for RAG query responses"""
+
+    response = serializers.CharField()
+    query_id = serializers.CharField()
+    context_documents = serializers.IntegerField()
+    generation_time = serializers.FloatField()
+
+
+class VectorStorePopulateSerializer(serializers.Serializer):
+    """Serializer for vector store population requests"""
+
+    source_type = serializers.ChoiceField(
+        choices=['trip', 'all'],
+        default='all'
+    )
+
+
+class VectorStorePopulateResponseSerializer(serializers.Serializer):
+    """Serializer for vector store population responses"""
+
+    total_items = serializers.IntegerField()
+    success_count = serializers.IntegerField()
+    error_count = serializers.IntegerField()
+    message = serializers.CharField()

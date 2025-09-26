@@ -105,6 +105,6 @@ export interface FiltersState {
   dateRange?: [string, string];
   priceRange: [number, number];
   duration?: number;
-  tags: string[];
+  featured?: string;
   difficulty?: string;
 }

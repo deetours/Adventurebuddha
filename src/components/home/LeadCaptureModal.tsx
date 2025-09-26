@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/lib/config';
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api';
 
 interface LeadData {
   name: string;
@@ -156,10 +158,20 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
     }
   };
 
-  const destinations = [
-    'Ladakh', 'Kashmir', 'Himachal Pradesh', 'Uttarakhand',
-    'Sikkim', 'Meghalaya', 'Arunachal Pradesh', 'Goa', 'Rajasthan', 'Kerala'
-  ];
+  // Fetch destinations from backend trips
+  const { data: trips = [] } = useQuery({
+    queryKey: ['trips-for-destinations'],
+    queryFn: () => apiClient.getTrips(),
+  });
+
+  // Extract unique destinations from trips
+  const destinations = Array.from(new Set(
+    trips.flatMap(trip => 
+      trip.tags.filter(tag => 
+        ['kashmir', 'goa', 'rajasthan', 'kerala', 'ladakh', 'himachal', 'uttarakhand', 'sikkim', 'meghalaya', 'arunachal', 'karnataka', 'maharashtra', 'gujarat', 'punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar', 'jharkhand', 'west bengal', 'odisha', 'chhattisgarh', 'madhya pradesh', 'andhra pradesh', 'telangana', 'tamil nadu', 'puducherry', 'lakshadweep', 'andaman', 'nicobar'].includes(tag.toLowerCase())
+      )
+    )
+  )).map(dest => dest.charAt(0).toUpperCase() + dest.slice(1)).sort();
 
   const interests = [
     'Trekking', 'Photography', 'Cultural Tours', 'Adventure Sports',

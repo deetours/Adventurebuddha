@@ -77,7 +77,7 @@ export default function LandingPage() {
   // Fetch featured trips
   const { data: featuredTrips = [] } = useQuery({
     queryKey: ['featured-trips'],
-    queryFn: () => apiClient.getTrips({ tags: ['featured'] }),
+    queryFn: () => apiClient.getTrips({ featured: 'featured' }),
   });
 
   const handleSearch = (query: string) => {

@@ -3,10 +3,10 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
+from django.db import models
 from .models import (
     AIAgent, AIConversation, AIMessageTemplate, AISentimentAnalysis,
-    AIContentGeneration, AIProcessingLog
+    AIContentGeneration, AIProcessingLog, VectorDocument, RAGQuery
 )
 from .serializers import (
     AIAgentSerializer, AIConversationSerializer, AIMessageTemplateSerializer,
@@ -14,9 +14,12 @@ from .serializers import (
     AIProcessingLogSerializer, AIChatRequestSerializer, AIChatResponseSerializer,
     AIMessageRedraftSerializer, AIMessageRedraftResponseSerializer,
     AISentimentRequestSerializer, AIContentGenerationRequestSerializer,
-    AITemplateEnhancementSerializer, BulkAISentimentSerializer
+    AITemplateEnhancementSerializer, BulkAISentimentSerializer,
+    VectorDocumentSerializer, RAGQuerySerializer, RAGQueryRequestSerializer,
+    RAGQueryResponseSerializer, VectorStorePopulateSerializer,
+    VectorStorePopulateResponseSerializer
 )
-from .services import AIService
+from .services import AIService, RAGService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -366,6 +369,169 @@ def ai_agent_stats(request):
 
     except Exception as e:
         logger.error(f"Error getting AI stats: {str(e)}")
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+# RAG (Retrieval-Augmented Generation) Views
+
+class VectorDocumentViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for Vector Document management"""
+
+    serializer_class = VectorDocumentSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = VectorDocument.objects.filter(is_active=True)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        source_type = self.request.query_params.get('source_type')
+        if source_type:
+            queryset = queryset.filter(source_type=source_type)
+        return queryset
+
+
+class RAGQueryViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for RAG Query history"""
+
+    serializer_class = RAGQuerySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RAGQuery.objects.filter(user=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def rate_response(self, request, pk=None):
+        """Rate a RAG response"""
+        rag_query = self.get_object()
+        rating = request.data.get('rating')
+        feedback = request.data.get('feedback', '')
+
+        if rating is not None:
+            try:
+                rating = int(rating)
+                if not 1 <= rating <= 5:
+                    return Response(
+                        {'error': 'Rating must be between 1 and 5'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                rag_query.user_rating = rating
+                rag_query.user_feedback = feedback
+                rag_query.save()
+
+                return Response({'message': 'Rating saved successfully'})
+
+            except (ValueError, TypeError):
+                return Response(
+                    {'error': 'Invalid rating value'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        return Response(
+            {'error': 'Rating is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def rag_query(request):
+    """Process a RAG query for trip information"""
+    serializer = RAGQueryRequestSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        rag_service = RAGService()
+        response_data = rag_service.process_query(
+            query=serializer.validated_data['query'],
+            session_id=serializer.validated_data.get('session_id'),
+            top_k=serializer.validated_data.get('top_k', 5),
+            user=request.user
+        )
+
+        response_serializer = RAGQueryResponseSerializer(data=response_data)
+        if response_serializer.is_valid():
+            return Response(response_serializer.validated_data)
+        else:
+            return Response(response_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except Exception as e:
+        logger.error(f"Error processing RAG query: {str(e)}")
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def populate_vector_store(request):
+    """Populate the vector store with trip data"""
+    serializer = VectorStorePopulateSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        rag_service = RAGService()
+        result = rag_service.populate_vector_store(
+            source_type=serializer.validated_data.get('source_type', 'all')
+        )
+
+        response_serializer = VectorStorePopulateResponseSerializer(data=result)
+        if response_serializer.is_valid():
+            return Response(response_serializer.validated_data)
+        else:
+            return Response(response_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except Exception as e:
+        logger.error(f"Error populating vector store: {str(e)}")
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def rag_stats(request):
+    """Get RAG system statistics"""
+    try:
+        # Get vector document stats
+        total_documents = VectorDocument.objects.filter(is_active=True).count()
+        documents_by_type = {}
+        for doc in VectorDocument.objects.filter(is_active=True).values('source_type').annotate(count=models.Count('id')):
+            documents_by_type[doc['source_type']] = doc['count']
+
+        # Get query stats
+        total_queries = RAGQuery.objects.count()
+        avg_response_time = RAGQuery.objects.filter(total_time__isnull=False).aggregate(avg_time=models.Avg('total_time'))['avg_time']
+        avg_rating = RAGQuery.objects.filter(user_rating__isnull=False).aggregate(avg_rating=models.Avg('user_rating'))['avg_rating']
+
+        # Recent queries
+        recent_queries = RAGQuery.objects.order_by('-created_at')[:10]
+        recent_query_data = []
+        for query in recent_queries:
+            recent_query_data.append({
+                'id': query.id,
+                'query': query.query[:100] + '...' if len(query.query) > 100 else query.query,
+                'response_quality': query.response_quality,
+                'total_time': query.total_time,
+                'created_at': query.created_at
+            })
+
+        return Response({
+            'total_documents': total_documents,
+            'documents_by_type': documents_by_type,
+            'total_queries': total_queries,
+            'average_response_time': avg_response_time,
+            'average_rating': avg_rating,
+            'recent_queries': recent_query_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error getting RAG stats: {str(e)}")
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

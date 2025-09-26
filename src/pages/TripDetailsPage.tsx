@@ -34,7 +34,7 @@ import { apiClient } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import type { Slot } from '@/lib/types';
 function TripDetailsPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
@@ -46,9 +46,9 @@ function TripDetailsPage() {
 
   // Fetch trip details
   const { data: trip, error } = useQuery({
-    queryKey: ['trip', id],
-    queryFn: () => apiClient.getTrip(id!),
-    enabled: !!id,
+    queryKey: ['trip', slug],
+    queryFn: () => apiClient.getTrip(slug!),
+    enabled: !!slug,
   });
 
   useEffect(() => {

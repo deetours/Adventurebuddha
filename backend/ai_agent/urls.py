@@ -10,6 +10,8 @@ router.register(r'templates', views.AIMessageTemplateViewSet, basename='ai-templ
 router.register(r'sentiment-analysis', views.AISentimentAnalysisViewSet, basename='sentiment-analysis')
 router.register(r'content-generation', views.AIContentGenerationViewSet, basename='content-generation')
 router.register(r'processing-logs', views.AIProcessingLogViewSet, basename='processing-log')
+router.register(r'vector-documents', views.VectorDocumentViewSet, basename='vector-document')
+router.register(r'rag-queries', views.RAGQueryViewSet, basename='rag-query')
 
 # URL patterns
 urlpatterns = [
@@ -23,6 +25,11 @@ urlpatterns = [
     path('generate-content/', views.ai_generate_content, name='ai-generate-content'),
     path('bulk-sentiment-analysis/', views.ai_bulk_sentiment_analysis, name='ai-bulk-sentiment'),
 
+    # RAG Operation URLs
+    path('rag-query/', views.rag_query, name='rag-query'),
+    path('populate-vector-store/', views.populate_vector_store, name='populate-vector-store'),
+
     # Analytics URLs
     path('stats/', views.ai_agent_stats, name='ai-agent-stats'),
+    path('rag-stats/', views.rag_stats, name='rag-stats'),
 ]

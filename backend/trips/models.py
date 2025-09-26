@@ -14,20 +14,48 @@ class Trip(models.Model):
         ('archived', 'Archived'),
     ]
     
+    CATEGORY_CHOICES = [
+        ('cultural', 'Cultural'),
+        ('adventure', 'Adventure'),
+        ('spiritual', 'Spiritual'),
+        ('beach', 'Beach'),
+        ('trekking', 'Trekking'),
+        ('mixed', 'Mixed'),
+    ]
+    
+    FEATURED_CHOICES = [
+        ('featured', 'Featured'),
+        ('popular', 'Popular'),
+        ('both', 'Both'),
+        ('none', 'None'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     slug = models.SlugField(unique=True)
     title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=300, blank=True, null=True)
     description = models.TextField()
+    overview = models.TextField(blank=True, null=True)
     images = models.JSONField(default=list)  # Store image URLs as list
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    gst_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=5.0)
     duration = models.IntegerField()  # in days
     tags = models.JSONField(default=list)  # Store tags as list
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='mixed')
+    featured_status = models.CharField(max_length=20, choices=FEATURED_CHOICES, default='none')
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
     review_count = models.IntegerField(default=0)
     inclusions = models.JSONField(default=list)
     exclusions = models.JSONField(default=list)
+    things_to_carry = models.JSONField(default=list)
+    important_points = models.JSONField(default=list)
+    who_can_attend = models.JSONField(default=list)
     itinerary = models.JSONField(default=list)  # Store day-wise itinerary
+    contact_info = models.JSONField(default=dict)  # Contact numbers, etc.
+    bank_details = models.JSONField(default=dict)  # Payment information
+    notes = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
