@@ -16,7 +16,7 @@ export function InteractiveTimeline() {
 
   const events: TimelineEvent[] = [
     {
-      year: '2009',
+      year: '2019',
       title: 'Founded',
       description: 'Adventure Buddha was born from a passion for authentic travel experiences.',
       icon: Calendar,
@@ -24,7 +24,7 @@ export function InteractiveTimeline() {
       image: '/images/founding.jpg'
     },
     {
-      year: '2012',
+      year: '2020',
       title: 'First 100 Trips',
       description: 'Reached our first major milestone with 100 successful adventures.',
       icon: MapPin,
