@@ -16,7 +16,7 @@ export function InteractiveTimeline() {
 
   const events: TimelineEvent[] = [
     {
-      year: '2019',
+      year: '2025',
       title: 'Founded',
       description: 'Adventure Buddha was born from a passion for authentic travel experiences.',
       icon: Calendar,
