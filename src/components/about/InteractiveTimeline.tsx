@@ -58,7 +58,7 @@ export function InteractiveTimeline() {
     {
       year: '2025',
       title: 'Global Reach',
-      description: 'Expanded to 25+ countries with 50+ unique destinations.',
+      description: 'Expanded across different states with 50+ unique destinations.',
       icon: MapPin,
       details: 'Now serving over 10,000 happy travelers annually with unforgettable experiences worldwide.',
       image: '/images/global-expansion.jpg'
