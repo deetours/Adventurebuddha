@@ -61,24 +61,17 @@ export default function LandingPage() {
   const enableHeavyAnimations = fps >= 50;
   const enableBackgroundAnimations = fps >= 40;
 
-  // Auto-open lead modal after 10 seconds
+      // Auto-open lead modal after 5 seconds
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const hasSeenModal = localStorage.getItem('leadModalShown');
-      if (!hasSeenModal) {
+    const hasSeenModal = localStorage.getItem('leadModalShown');
+    if (!hasSeenModal) {
+      const timer = setTimeout(() => {
         setIsLeadModalOpen(true);
         localStorage.setItem('leadModalShown', 'true');
-      }
-    }, 10000);
+      }, 5000); // 5 seconds
 
-    // Listen for custom event to open modal
-    const handleOpenLeadModal = () => setIsLeadModalOpen(true);
-    window.addEventListener('openLeadModal', handleOpenLeadModal);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('openLeadModal', handleOpenLeadModal);
-    };
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Fetch featured trips

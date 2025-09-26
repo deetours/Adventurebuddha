@@ -55,7 +55,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Phone</h3>
-                    <p className="text-gray-600">+91 98765 43210</p>
+                    <p className="text-gray-600">+91 80734 65622</p>
                   </div>
                 </div>
                 
@@ -65,7 +65,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-gray-600">hello@adventurebuddha.com</p>
+                    <p className="text-gray-600">adventurebuddha@gmail.com</p>
                   </div>
                 </div>
                 
@@ -76,8 +76,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium text-gray-900">Office</h3>
                     <p className="text-gray-600">
-                      123 Travel Street<br />
-                      Adventure City, AC 12345<br />
+                      1359/4 2nd Main, 3rd Cross Rd<br />
+                      Yeswanthpur, Bengaluru<br />
                       India
                     </p>
                   </div>
@@ -107,7 +107,7 @@ export default function ContactPage() {
               <CardContent>
                 <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64" />
                 <p className="text-center mt-4 text-gray-600">
-                  123 Travel Street, Adventure City
+                  1359/4 2nd Main, 3rd Cross Rd, Yeswanthpur, Bengaluru
                 </p>
               </CardContent>
             </Card>

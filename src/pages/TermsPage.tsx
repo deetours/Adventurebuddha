@@ -67,9 +67,9 @@ export default function TermsPage() {
               If you have any questions about these Terms, please contact us at:
             </p>
             <p>
-              Email: legal@adventurebuddha.com<br />
-              Phone: +91 98765 43210<br />
-              Address: 123 Travel Street, Adventure City, AC 12345
+              Email: adventurebuddha@gmail.com<br />
+              Phone: +91 80734 65622<br />
+              Address: 1359/4 2nd Main, 3rd Cross Rd, Yeswanthpur, Bengaluru
             </p>
           </div>
         </div>

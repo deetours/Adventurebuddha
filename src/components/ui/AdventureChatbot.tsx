@@ -148,7 +148,7 @@ What can I help you with today?`,
 
   return (
     <>
-      {/* Chatbot Toggle Button */}
+      {/* Chatbot Toggle Button - Made more prominent */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -157,8 +157,24 @@ What can I help you with today?`,
         <Button
           onClick={onToggle}
           size="lg"
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="h-16 w-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 relative"
         >
+          {/* Pulse animation when closed */}
+          {!isOpen && (
+            <motion.div
+              className="absolute inset-0 rounded-full bg-orange-400"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 0, 0.7]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          )}
+
           <AnimatePresence mode="wait">
             {isOpen ? (
               <motion.div
@@ -168,7 +184,7 @@ What can I help you with today?`,
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <X className="h-6 w-6" />
+                <X className="h-7 w-7" />
               </motion.div>
             ) : (
               <motion.div
@@ -177,12 +193,32 @@ What can I help you with today?`,
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: -90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
+                className="relative"
               >
-                <MessageCircle className="h-6 w-6" />
+                <MessageCircle className="h-7 w-7" />
+                {/* Chat indicator dot */}
+                <motion.div
+                  className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
               </motion.div>
             )}
           </AnimatePresence>
         </Button>
+
+        {/* Floating label when closed */}
+        {!isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="absolute right-20 top-1/2 transform -translate-y-1/2 bg-white rounded-lg px-3 py-2 shadow-lg border border-orange-200 hidden md:block"
+          >
+            <div className="text-sm font-medium text-gray-900">Need help? 💬</div>
+            <div className="text-xs text-gray-500">Click to chat</div>
+            <div className="absolute left-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-l-white"></div>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Chatbot Window */}
@@ -193,7 +229,7 @@ What can I help you with today?`,
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-96 h-[600px] z-50"
+            className="fixed bottom-24 right-6 w-96 h-[500px] z-50 max-w-[calc(100vw-3rem)]"
           >
             <Card className="h-full flex flex-col shadow-2xl border-2 border-orange-200">
               {/* Header */}

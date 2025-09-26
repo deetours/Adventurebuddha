@@ -73,17 +73,17 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-gray-300">+91 98765 43210</span>
+                <span className="text-gray-300">+91 80734 65622</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-gray-300">hello@adventurebuddhha.com</span>
+                <span className="text-gray-300">adventurebuddha@gmail.com</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-1" />
                 <span className="text-gray-300">
-                  123 Travel Street<br />
-                  Adventure City, AC 12345
+                  1359/4 2nd Main, 3rd Cross Rd<br />
+                  Yeswanthpur, Bengaluru
                 </span>
               </div>
             </div>

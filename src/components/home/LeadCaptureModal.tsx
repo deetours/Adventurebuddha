@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import { config } from '@/lib/config';
 
 interface LeadData {
   name: string;
@@ -118,7 +119,7 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/leads/', {
+      const response = await fetch(`${config.API_BASE_URL}/leads/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
