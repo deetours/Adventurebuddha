@@ -13,4 +13,20 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
+        },
+      },
+    },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  },
 });

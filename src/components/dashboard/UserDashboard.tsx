@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
   Calendar,
-  MapPin,
   CreditCard,
   Settings,
   Bell,
@@ -11,11 +10,9 @@ import {
   Clock,
   CheckCircle,
   Plane,
-  Users,
   IndianRupee,
   Award,
-  MessageSquare,
-  RefreshCw
+  MessageSquare
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +24,7 @@ import { apiClient } from '@/lib/api';
 import { useRealtimeDashboard } from '@/hooks/useWebSocket';
 import { useAuthStore } from '@/stores/authStore';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface UserBooking {
   id: string;
   tripName: string;
@@ -40,6 +38,7 @@ interface UserBooking {
   image: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface UserStats {
   totalTrips: number;
   totalSpent: number;
@@ -48,6 +47,7 @@ interface UserStats {
   avgRating: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface NotificationSettings {
   emailBookings: boolean;
   emailPromotions: boolean;

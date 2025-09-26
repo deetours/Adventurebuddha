@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
+import { config } from '@/lib/config';
 import { auth, googleProvider } from '@/lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
 
@@ -41,49 +41,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Firebase auth state listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setFirebaseUser(firebaseUser);
+    let unsubscribe: (() => void) | undefined;
 
-      if (firebaseUser) {
-        // User is signed in with Firebase, sync with Django backend
-        try {
-          const idToken = await firebaseUser.getIdToken();
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        setFirebaseUser(firebaseUser);
 
-          // Send Firebase token to Django backend
-          const response = await fetch('http://localhost:8000/api/auth/firebase/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id_token: idToken }),
-          });
+        if (firebaseUser) {
+          // User is signed in with Firebase, sync with Django backend
+          try {
+            const idToken = await firebaseUser.getIdToken();
 
-          if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('auth-token', data.access_token);
-            localStorage.setItem('refresh-token', data.refresh_token);
-            setUser(data.user);
-          } else {
-            console.error('Failed to sync with Django backend');
+            // Send Firebase token to Django backend
+            const response = await fetch(`${config.API_BASE_URL.replace('/api', '')}/api/auth/firebase/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id_token: idToken }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem('auth-token', data.access_token);
+              localStorage.setItem('refresh-token', data.refresh_token);
+              setUser(data.user);
+            } else {
+              console.error('Failed to sync with Django backend');
+            }
+          } catch (error) {
+            console.error('Firebase-Django sync error:', error);
           }
-        } catch (error) {
-          console.error('Firebase-Django sync error:', error);
+        } else {
+          // User is signed out from Firebase
+          setUser(null);
+          localStorage.removeItem('auth-token');
+          localStorage.removeItem('refresh-token');
         }
-      } else {
-        // User is signed out from Firebase
-        setUser(null);
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('refresh-token');
-      }
 
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.error('Firebase auth initialization failed:', error);
+      // Continue without Firebase auth
       setIsLoading(false);
-    });
+    }
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   // Check for existing Django auth token on mount (for non-Firebase logins)
@@ -97,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const validateDjangoToken = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/user/', {
+      const response = await fetch(`${config.API_BASE_URL.replace('/api', '')}/api/auth/user/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -120,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login/', {
+      const response = await fetch(`${config.API_BASE_URL.replace('/api', '')}/api/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           title: "Login Successful",
           description: "Welcome back!",
         });
-        navigate('/home');
+        window.location.href = '/home';
       } else {
         throw new Error(data.detail || 'Login failed');
       }
@@ -168,7 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const [firstName, ...lastNameParts] = name.split(' ');
       const lastName = lastNameParts.join(' ');
 
-      const response = await fetch('http://localhost:8000/api/auth/registration/', {
+      const response = await fetch(`${config.API_BASE_URL.replace('/api', '')}/api/auth/registration/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           title: "Registration Successful",
           description: "Welcome to Adventure Buddha!",
         });
-        navigate('/home');
+        window.location.href = '/home';
       } else {
         throw new Error(data.detail || 'Registration failed');
       }
@@ -217,12 +228,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         title: "Login Successful",
         description: "Welcome to Adventure Buddha!",
       });
-      navigate('/home');
+      window.location.href = '/home';
     } catch (error) {
       console.error('Firebase Google login error:', error);
       toast({
         title: "Google Login Failed",
-        description: "An error occurred during Google login",
+        description: "Google login is not available. Please use email login instead.",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -232,17 +243,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       // Sign out from both Firebase and clear Django tokens
-      await firebaseSignOut(auth);
+      await firebaseSignOut(auth).catch(() => {
+        // Ignore Firebase logout errors
+      });
       localStorage.removeItem('auth-token');
       localStorage.removeItem('refresh-token');
       setUser(null);
-      navigate('/');
+      window.location.href = '/';
       toast({
         title: "Logged Out",
         description: "You have been logged out successfully",
       });
     } catch (error) {
       console.error('Logout error:', error);
+      // Still clear local state even if logout fails
+      localStorage.removeItem('auth-token');
+      localStorage.removeItem('refresh-token');
+      setUser(null);
+      window.location.href = '/';
     }
   };
 

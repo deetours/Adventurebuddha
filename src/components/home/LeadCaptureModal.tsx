@@ -41,21 +41,77 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
   });
   const { toast } = useToast();
 
-  // Auto-show modal after 10 seconds on page load
+  // Prevent body scroll when modal is open
   useEffect(() => {
-    if (!isOpen) {
-      const timer = setTimeout(() => {
-        const hasSeenModal = localStorage.getItem('leadModalShown');
-        if (!hasSeenModal) {
-          // Trigger modal to open
-          const event = new CustomEvent('openLeadModal');
-          window.dispatchEvent(event);
-          localStorage.setItem('leadModalShown', 'true');
-        }
-      }, 10000);
-      return () => clearTimeout(timer);
+    if (isOpen) {
+      // Store original overflow and position
+      const originalOverflow = document.body.style.overflow;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalWidth = document.body.style.width;
+
+      // Prevent scroll and maintain position
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+
+      // Restore on cleanup
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = originalWidth;
+
+        // Restore scroll position
+        window.scrollTo(0, parseInt(originalTop || '0', 10) * -1);
+      };
     }
   }, [isOpen]);
+
+  // Focus management
+  useEffect(() => {
+    if (isOpen) {
+      // Focus the modal when it opens
+      const modal = document.querySelector('[role="dialog"]') as HTMLElement;
+      if (modal) {
+        modal.focus();
+      }
+
+      // Prevent tabbing outside modal
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+
+        if (e.key === 'Tab') {
+          const modal = document.querySelector('[role="dialog"]') as HTMLElement;
+          if (modal) {
+            const focusableElements = modal.querySelectorAll(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0] as HTMLElement;
+            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+            if (e.shiftKey) {
+              if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+              }
+            } else {
+              if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+              }
+            }
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,19 +181,28 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden sm:max-w-md md:max-w-lg"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              maxHeight: 'calc(100vh - 1rem)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
           >
             {/* Header with special offer */}
-            <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 p-6 text-white relative overflow-hidden">
+            <div className="flex-shrink-0 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 p-4 sm:p-6 text-white relative overflow-hidden">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="relative z-10">
                 <div className="flex justify-between items-start">
@@ -148,12 +213,13 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
                         LIMITED TIME
                       </span>
                     </div>
-                    <h2 className="text-2xl font-bold mb-1">🌟 Exclusive Offer!</h2>
+                    <h2 id="modal-title" className="text-2xl font-bold mb-1">🌟 Exclusive Offer!</h2>
                     <p className="text-orange-100 text-sm">Get 15% off your first adventure trip + Free travel consultation</p>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
+                    className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full ml-2 flex-shrink-0"
+                    aria-label="Close modal"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -162,7 +228,7 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
             </div>
 
             {/* Progress indicator */}
-            <div className="px-6 pt-4">
+            <div className="flex-shrink-0 px-4 sm:px-6 pt-4">
               <div className="flex items-center justify-center gap-2 mb-4">
                 {[1, 2].map((stepNum) => (
                   <div key={stepNum} className="flex items-center">
@@ -186,8 +252,8 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
               </div>
             </div>
 
-            {/* Form Content */}
-            <div className="px-6 pb-6">
+            {/* Form Content - Scrollable area */}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6" id="modal-description">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Step 1: Basic Info */}
                 {step === 1 && (
@@ -381,7 +447,8 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
                 )}
               </form>
 
-              <div className="mt-6 pt-4 border-t border-gray-200">
+              {/* Footer - Fixed at bottom */}
+              <div className="flex-shrink-0 mt-4 sm:mt-6 pt-4 border-t border-gray-200 px-4 sm:px-6">
                 <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-3 w-3 text-green-500" />
