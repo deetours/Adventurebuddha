@@ -16,7 +16,7 @@ export function InteractiveTimeline() {
 
   const events: TimelineEvent[] = [
     {
-      year: '2025',
+      year: '2018',
       title: 'Founded',
       description: 'Adventure Buddha was born from a passion for authentic travel experiences.',
       icon: Calendar,
@@ -32,7 +32,7 @@ export function InteractiveTimeline() {
       image: '/images/milestone-100.jpg'
     },
     {
-      year: '2015',
+      year: '2021',
       title: 'Team Expansion',
       description: 'Grew our team to 20 dedicated adventure specialists.',
       icon: Users,
@@ -40,15 +40,15 @@ export function InteractiveTimeline() {
       image: '/images/team-growth.jpg'
     },
     {
-      year: '2018',
-      title: 'International Recognition',
+      year: '2023',
+      title: 'National Recognition',
       description: 'Received awards for sustainable tourism practices.',
       icon: Award,
-      details: 'Recognized by international travel organizations for our commitment to responsible tourism.',
+      details: 'Recognized by national travel organizations for our commitment to responsible tourism.',
       image: '/images/awards.jpg'
     },
     {
-      year: '2021',
+      year: '2024',
       title: 'Digital Transformation',
       description: 'Launched our online booking platform and mobile app.',
       icon: Calendar,
@@ -56,7 +56,7 @@ export function InteractiveTimeline() {
       image: '/images/digital-launch.jpg'
     },
     {
-      year: '2024',
+      year: '2025',
       title: 'Global Reach',
       description: 'Expanded to 25+ countries with 50+ unique destinations.',
       icon: MapPin,
