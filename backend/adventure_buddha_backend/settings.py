@@ -216,12 +216,15 @@ REST_AUTH = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Frontend development server
     "http://127.0.0.1:5173",
+    "http://68.233.115.38:5173",  # VM IP for frontend
     "https://your-netlify-site.netlify.app",  # Replace with your actual Netlify URL
 ]
 
-# For production, you might want to use CORS_ALLOW_ALL_ORIGINS = True
-# But it's safer to specify allowed origins
-# CORS_ALLOW_ALL_ORIGINS = True
+# Allow credentials for CORS
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow all origins for development (less secure but easier for testing)
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Channels settings for WebSocket support (disabled for now)
 # ASGI_APPLICATION = 'adventure_buddha_backend.asgi.application'
