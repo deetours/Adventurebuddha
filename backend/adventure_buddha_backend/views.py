@@ -2,10 +2,55 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.db import connection
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 import requests
+import os
+from redis import Redis
+
+
+def health_check(request):
+    """
+    Health check endpoint that verifies:
+    - Database connectivity
+    - Redis connectivity (if configured)
+    - Basic service availability
+    """
+    health_status = {
+        'status': 'healthy',
+        'services': {},
+        'timestamp': __import__('datetime').datetime.now().isoformat()
+    }
+
+    # Check database
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        health_status['services']['database'] = 'healthy'
+    except Exception as e:
+        health_status['services']['database'] = f'unhealthy: {str(e)}'
+        health_status['status'] = 'unhealthy'
+
+    # Check Redis (optional)
+    redis_url = os.getenv('REDIS_URL')
+    if redis_url:
+        try:
+            redis_client = Redis.from_url(redis_url)
+            redis_client.ping()
+            health_status['services']['redis'] = 'healthy'
+        except Exception as e:
+            health_status['services']['redis'] = f'unhealthy: {str(e)}'
+            health_status['status'] = 'unhealthy'
+    else:
+        health_status['services']['redis'] = 'not_configured'
+
+    # Set HTTP status code
+    status_code = 200 if health_status['status'] == 'healthy' else 503
+
+    return JsonResponse(health_status, status=status_code)
 
 
 class GoogleLogin(SocialLoginView):
