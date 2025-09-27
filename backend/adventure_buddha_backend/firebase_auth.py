@@ -3,12 +3,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-import firebase_admin
-from firebase_admin import auth, credentials
 import os
 
+# Try to import firebase_admin, but don't fail if it's not available
+try:
+    import firebase_admin
+    from firebase_admin import auth, credentials
+    FIREBASE_AVAILABLE = True
+except ImportError:
+    firebase_admin = None
+    auth = None
+    credentials = None
+    FIREBASE_AVAILABLE = False
+
 # Initialize Firebase Admin SDK
-if not firebase_admin._apps:
+if FIREBASE_AVAILABLE and not firebase_admin._apps:
     # For development, use Firebase config from environment
     # In production, you should use a service account key file
     try:
@@ -36,6 +45,8 @@ if not firebase_admin._apps:
     except Exception as e:
         print(f"Warning: Firebase Admin SDK initialization failed: {e}")
         print("Firebase authentication will not work. Please set up proper Firebase credentials.")
+elif not FIREBASE_AVAILABLE:
+    print("Warning: firebase-admin not installed. Firebase authentication will not be available.")
 
 class FirebaseAuthView(APIView):
     """
@@ -43,6 +54,12 @@ class FirebaseAuthView(APIView):
     """
 
     def post(self, request):
+        if not FIREBASE_AVAILABLE:
+            return Response(
+                {'error': 'Firebase authentication is not available. Please install firebase-admin package.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
         id_token = request.data.get('id_token')
 
         if not id_token:
