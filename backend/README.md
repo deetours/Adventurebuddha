@@ -92,7 +92,12 @@ backend/
 
 ### Docker Setup
 
-1. **Build and run with Docker Compose:**
+1. **Navigate to the backend directory:**
+   ```bash
+   cd backend
+   ```
+
+2. **Build and run with Docker Compose:**
    ```bash
    docker-compose up --build
    ```
