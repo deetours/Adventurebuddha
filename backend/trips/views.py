@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django.db import models
 from .models import Trip, TripSlot, SeatMap
 from .serializers import TripSerializer, TripSlotSerializer, SeatMapSerializer
@@ -10,6 +11,7 @@ class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.filter(status='published').order_by('-created_at')
     serializer_class = TripSerializer
     lookup_field = 'slug'
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         queryset = Trip.objects.filter(status='published')
@@ -71,6 +73,7 @@ class TripViewSet(viewsets.ModelViewSet):
 class TripSlotViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = TripSlot.objects.all()
     serializer_class = TripSlotSerializer
+    permission_classes = [AllowAny]
     
     @action(detail=True, methods=['get'])
     def seatmap(self, request, pk=None):
