@@ -4,6 +4,8 @@ export const config = {
   RAZORPAY_KEY: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_key',
   USE_MOCK_API: false, // Use real API
   STORYBOOK_MODE: import.meta.env.STORYBOOK === 'true',
+  // Fallback URLs for when VM is down
+  FALLBACK_API_URL: 'http://127.0.0.1:3001/api',
 } as const;
 
 export const routes = {

@@ -7,6 +7,7 @@ import { AdvancedFilters } from '../components/trips/AdvancedFilters';
 import { InteractiveMap } from '../components/trips/InteractiveMap';
 import { Button } from '../components/ui/button';
 import { apiClient } from '../lib/api';
+import { config } from '../lib/config';
 import type { FiltersState, Trip } from '../lib/types';
 
 export default function TripsPage() {
@@ -29,9 +30,9 @@ export default function TripsPage() {
   const { data: trips = [], isLoading, error } = useQuery({
     queryKey: ['trips', filters],
     queryFn: async () => {
-      console.log('🔍 Fetching trips from VM API with filters:', { 
+      console.log('🔍 Fetching trips with filters:', { 
         filters,
-        apiUrl: 'http://68.233.115.38:8000/api'
+        apiUrl: config.API_BASE_URL
       });
       
       try {
@@ -39,7 +40,7 @@ export default function TripsPage() {
         console.log('✅ Successfully fetched trips:', result.length, 'trips');
         return result;
       } catch (error) {
-        console.error('❌ Failed to fetch trips from VM:', error);
+        console.error('❌ Failed to fetch trips:', error);
         throw error;
       }
     },
@@ -309,7 +310,7 @@ export default function TripsPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
           <p className="text-gray-600">Failed to load trips. Please try again later.</p>
           <div className="text-xs text-gray-400 mt-2">
-            API Endpoint: http://68.233.115.38:8000/api/trips/
+            API Endpoint: {config.API_BASE_URL}/trips/
           </div>
           <button
             onClick={() => window.location.reload()}
@@ -330,7 +331,10 @@ export default function TripsPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
           <div className="text-gray-600">Loading trips from server...</div>
           <div className="text-xs text-gray-400 mt-2">
-            Connecting to: http://68.233.115.38:8000/api
+            Connecting to: {config.API_BASE_URL}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            Debug: {safeTrips.length} trips loaded so far
           </div>
         </div>
       </div>

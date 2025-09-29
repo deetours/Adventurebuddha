@@ -1,0 +1,755 @@
+[
+  {
+    "created_at": "2025-09-27T22:42:38.138875+00:00",
+    "duration": 3,
+    "tags": [
+      "cultural",
+      "beach",
+      "adventure",
+      "yakshagana",
+      "temple",
+      "coastal",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Trade the city lights of Bangalore for Udupi's serene backwaters, golden beaches, and vibrant cultural traditions. This 3-day journey blends adventure and heritage – from kayaking in the Suvarna River and parasailing at Malpe, to witnessing the captivating Yakshagana folk theatre and soaking in temple vibes at Sri Krishna Matha. Add in coastal delicacies, lively fish markets, and stunning sunsets – and you've got the perfect mix of sea, soul, and stories.",
+    "id": 12,
+    "price": "5999.00",
+    "images": [
+      "/images/udupi-coastal-1.jpg",
+      "/images/udupi-coastal-2.jpg",
+      "/images/udupi-coastal-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Overnight Journey from Bangalore",
+        "date": "Sep 19 (Friday Night)",
+        "description": "Board your vehicle in the evening. As the city lights fade, settle in for an overnight ride through Karnataka's highways.",
+        "day": 0,
+        "activities": []
+      },
+      {
+        "title": "Backwaters, Beaches & Coastal Culture",
+        "date": "Sep 20 (Saturday)",
+        "description": "Arrival in Udupi & Homestay Check-In. Wake up to refreshing coastal air as you arrive in Udupi. Check in to a cozy homestay surrounded by coconut palms and the sound of distant waves.",
+        "day": 1,
+        "activities": [
+          "Authentic Coastal Breakfast: neer dosa, goli baje, or Udupi buns with chutney",
+          "Kayaking in Suvarna River Backwaters",
+          "Toddy Tasting: traditional fermented coconut drink",
+          "Lunch: Coastal Feast - seafood thali or Udupi-style vegetarian meal",
+          "Beaches Trail: Malpe, Mattu & Padubidri beaches",
+          "Evening at Kapu Beach & Lighthouse",
+          "Yakshagana Cultural Experience (Night Event)"
+        ]
+      },
+      {
+        "title": "Temples, Heritage & Coastal Life",
+        "date": "Sep 21 (Sunday)",
+        "description": "Explore Udupi's rich cultural and spiritual heritage.",
+        "day": 2,
+        "activities": [
+          "Breakfast at the Homestay",
+          "Sri Krishna Temple Darshan (Udupi)",
+          "Lunch & Shopping: wholesome vegetarian thali and local markets",
+          "Hasta Shilpa Heritage Village",
+          "Manipal Museum of Anatomy & Pathology",
+          "Manipal End Point Park (Evening)",
+          "Dinner & Departure: Start overnight return journey"
+        ]
+      },
+      {
+        "title": "Back to Bangalore",
+        "date": "Early Morning",
+        "description": "Arrive in Bangalore early morning around 6 AM.",
+        "day": 3,
+        "activities": []
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.477182+00:00",
+    "exclusions": [
+      "Entry charges (if applicable)",
+      "Activity charges (e.g., Kayaking)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "both",
+    "title": "Coastal Flavours & Yakshagana Tales – Udupi Coastal Escape",
+    "inclusions": [
+      "Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐",
+      "3 meals: 2 breakfasts (Day 1 & Day 2), and 1 dinner (Day 1) 🍽️",
+      "Accommodation on 2–4 sharing basis, with cots/floor mattress (separate for guys and girls)",
+      "Local guide and outdoor trek leader from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.150928+00:00",
+    "duration": 3,
+    "tags": [
+      "cultural",
+      "tribal",
+      "forest",
+      "traditional",
+      "siddi",
+      "foraging",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Step into the heart of Uttara Kannada and experience the life of the tribal community, whose traditions have been preserved for centuries amidst the forests. This journey is not just about travel—it's about living, learning, and connecting. From exploring forests and foraging wild edibles, to cooking authentic tribal meals, joining cultural performances, and discovering sustainable living practices, this trip is crafted for those who want real, raw, and immersive experiences.",
+    "id": 13,
+    "price": "5999.00",
+    "images": [
+      "/images/uttara-kannada-1.jpg",
+      "/images/uttara-kannada-2.jpg",
+      "/images/uttara-kannada-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Departure from Bangalore",
+        "date": "Sep 26 (Friday)",
+        "description": "Depart from Bangalore by train or tempo traveller at 9:00 PM.",
+        "day": 0,
+        "activities": []
+      },
+      {
+        "title": "Arrival & Cultural Connection",
+        "date": "Sep 27 (Saturday)",
+        "description": "Arrive at Hubli and continue by vehicle (approx. 2 hrs) to your forest-nestled stay.",
+        "day": 1,
+        "activities": [
+          "Freshen up and enjoy a traditional welcome drink with breakfast",
+          "Spend time with the Siddi tribal community, listening to their stories and understanding their age-old traditions",
+          "Join the tribe in preparing authentic dishes over woodfire stoves, savoring the earthy aromas before sitting together for a traditional lunch",
+          "Discover the ingenious hunting tools used by the tribe, as elders demonstrate techniques passed down through generations",
+          "Embark on a short trek to a hidden waterfall, where the sound of rushing water blends with the forest's tranquil silence",
+          "Return to the stay and enjoy a refreshing herbal kashaya",
+          "Immerse yourself in an evening of soulful rhythms with Siddi dance, music, and storytelling under the stars",
+          "End the day with a wholesome traditional dinner and overnight stay"
+        ]
+      },
+      {
+        "title": "Foraging & Farewell",
+        "date": "Sep 28 (Sunday)",
+        "description": "Wake up early for a guided forest walk and foraging expedition.",
+        "day": 2,
+        "activities": [
+          "Wake up early for a guided forest walk and foraging expedition, discovering medicinal plants and wild edibles",
+          "Return for breakfast",
+          "Visit local areca nut farms and forage for seasonal greens",
+          "Engage in a hands-on cooking workshop where you'll grind spices, stir pots, and prepare age-old Siddi recipes, finally enjoying a community lunch",
+          "Wander through a nearby village, observing the rhythms of rural life and the simplicity of traditional living",
+          "Take part in tribal games that bring laughter, teamwork, and a glimpse into their playful community spirit",
+          "Savour some tea with the tribe, bid farewell, and depart for Hubli by 8:00 PM",
+          "Board your train/vehicle to Bangalore around 9:00 PM"
+        ]
+      },
+      {
+        "title": "Return to Bangalore",
+        "date": "Early Morning",
+        "description": "Reach Bangalore early morning by 7:00 AM.",
+        "day": 3,
+        "activities": []
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.496632+00:00",
+    "exclusions": [
+      "Entry charges (if applicable)",
+      "Activity charges (anything beyond Itinerary)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "both",
+    "title": "Tribal & Cultural Experience – Uttara Kannada",
+    "inclusions": [
+      "Travel from Bangalore to Hubli (train/tempo traveller/minibus – depending on group size) and local transfers to the tribal stay 🚐",
+      "5 meals: 2 breakfasts (Day 1 & Day 2), 2 lunches (Day 1 & Day 2), and 1 dinner (Day 1) 🍽️",
+      "Accommodation on 4 sharing basis with cots & floor mattress (separate for guys and girls)",
+      "Local tribal community hosts + cultural experiences",
+      "Outdoor trek leader & coordinator from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.163403+00:00",
+    "duration": 1,
+    "tags": [
+      "cultural",
+      "spiritual",
+      "fort",
+      "temple",
+      "light-show",
+      "isha",
+      "adiyogi",
+      "mountain",
+      "trekking",
+      "karnataka"
+    ],
+    "description": "Experience the majestic Gudibande Fort, a 17th-century marvel with panoramic views and ingenious rainwater harvesting systems, combined with the spiritual grandeur of the Bhoga Nandeeshwara Temple and the spectacular Adiyogi Light & Sound Show at Isha Foundation. This day trip blends history, spirituality, and modern artistry in a perfect harmony.",
+    "id": 14,
+    "price": "1260.00",
+    "images": [
+      "/images/gudibande-adiyogi-1.jpg",
+      "/images/gudibande-adiyogi-2.jpg",
+      "/images/gudibande-adiyogi-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Gudibande Fort & Isha Foundation Day Trip",
+        "date": "Sep 21 (Sunday)",
+        "description": "A complete day of cultural and spiritual exploration starting from Bangalore.",
+        "day": 1,
+        "activities": [
+          "Start from Bangalore in the morning by 8:00 AM and complete pickups",
+          "Icebreaker session on the way to get to know your fellow travel buddies",
+          "Visit the Bhoga Nandeeshwara Temple, a 1000-year-old temple at the base of Nandi Hills",
+          "Continue the journey with an early lunch en route to Gudibande",
+          "Reach the base of Gudibande Fort by 2:30 PM and begin the trek",
+          "A beginner-friendly climb of about 2 km leading to panoramic views and a chance to explore the fort's history",
+          "Spend some time at the top, enjoying the scenery and capturing memories",
+          "Head down to the base and proceed towards the Isha Foundation in the evening (6:30 PM)",
+          "Witness the grand Adiyogi Light & Sound Show at the 112-feet Adiyogi Shiva Statue",
+          "Start the return journey to Bangalore and reach by night by 10:00 PM (Approximate)"
+        ]
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.510726+00:00",
+    "exclusions": [
+      "Meals other than those mentioned in the itinerary",
+      "5% GST",
+      "Any kind of personal expenses",
+      "Any kind of insurance (health, life, accidental, medical, etc.)",
+      "Anything not included in the above list"
+    ],
+    "featured_status": "both",
+    "title": "Gudibande and Adiyogi Light Show",
+    "inclusions": [
+      "Travel from Bangalore to Chikkaballapur in a sit-in coach bus",
+      "1 meal (lunch)",
+      "Coffee/Tea",
+      "Local guide and outdoor trek leader from Adventure Buddha",
+      "Entry charges for all places"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.176115+00:00",
+    "duration": 3,
+    "tags": [
+      "cultural",
+      "beach",
+      "adventure",
+      "huli-vesha",
+      "temple",
+      "coastal",
+      "dasara",
+      "tiger-dance",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Trade the city lights of Bangalore for Udupi's serene backwaters, golden beaches, and vibrant cultural traditions. This 3-day journey blends adventure and heritage – from kayaking in the Suvarna River and parasailing at Malpe, to witnessing the electrifying Huli Vesha tiger dance and soaking in temple vibes at Sri Krishna Matha. Add in coastal delicacies, lively fish markets, and stunning sunsets – and you've got the perfect mix of sea, soul, and stories.",
+    "id": 15,
+    "price": "5999.00",
+    "images": [
+      "/images/udupi-coastal-updated-1.jpg",
+      "/images/udupi-coastal-updated-2.jpg",
+      "/images/udupi-coastal-updated-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Overnight Journey from Bangalore",
+        "date": "Sep 26 (Friday)",
+        "description": "Board your vehicle in the evening. As the city lights fade, settle in for an overnight ride through Karnataka's highways.",
+        "day": 0,
+        "activities": []
+      },
+      {
+        "title": "Backwaters, Beaches & Coastal Culture",
+        "date": "Sep 27 (Saturday)",
+        "description": "Arrival in Udupi & Homestay Check-In. Wake up to refreshing coastal air as you arrive in Udupi.",
+        "day": 1,
+        "activities": [
+          "Authentic Coastal Breakfast: neer dosa, goli baje, or Udupi buns with chutney",
+          "Kayaking in Suvarna River Backwaters",
+          "Toddy Tasting: traditional fermented coconut drink",
+          "Lunch: Coastal Feast - seafood thali or Udupi-style vegetarian meal",
+          "Beaches Trail: Malpe, Mattu & Padubidri beaches",
+          "Evening at Kapu Beach & Lighthouse",
+          "Dinner and overnight stay at homestay"
+        ]
+      },
+      {
+        "title": "Temples, Traditions & Dasara Festivities",
+        "date": "Sep 28 (Sunday)",
+        "description": "Explore Udupi's cultural heritage and witness Dasara festivities in Mangalore.",
+        "day": 2,
+        "activities": [
+          "Malpe Fish Market Visit - early morning fresh catch auction",
+          "Beach time and relaxation",
+          "Return to homestay, breakfast, and check-out",
+          "Sri Krishna Temple Darshan - world-famous temple with Kanakana Kindi",
+          "Lunch: wholesome sattvic meal on banana leaves",
+          "Drive to Mangalore – Huli Vesha Celebrations (tiger dance during Dasara)",
+          "Evening at Pabba's: Gudbud ice cream and snacks",
+          "Dinner in Mangalore and night departure to Bangalore"
+        ]
+      },
+      {
+        "title": "Back to Bangalore",
+        "date": "Early Morning",
+        "description": "Arrive in Bangalore early morning around 6 AM.",
+        "day": 3,
+        "activities": []
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.523179+00:00",
+    "exclusions": [
+      "Entry charges (if applicable)",
+      "Activity charges (e.g., Kayaking)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "popular",
+    "title": "Waves, Temples & Tiger Stripes – Udupi Coastal Escape",
+    "inclusions": [
+      "Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)",
+      "3 meals: 2 breakfasts (Day 1 & Day 2), and 1 dinner (Day 1) 🍽️",
+      "Accommodation on 2–4 sharing basis, with cots/floor mattress (separate for guys and girls)",
+      "Local guide and outdoor trek leader from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.186462+00:00",
+    "duration": 5,
+    "tags": [
+      "cultural",
+      "beach",
+      "spiritual",
+      "mangroves",
+      "french-colonial",
+      "auroville",
+      "pichavaram",
+      "coastal",
+      "hulivesha",
+      "puducherry"
+    ],
+    "description": "Embark on a coastal journey that blends French heritage, mystical mangroves, and spiritual serenity. From Pondicherry's colonial charm and Auroville's global community to Pichavaram's enchanting mangrove forests, this 5-day adventure offers a perfect mix of culture, nature, and coastal vibes.",
+    "id": 16,
+    "price": "8399.00",
+    "images": [
+      "/images/pondicherry-coastal-1.jpg",
+      "/images/pondicherry-coastal-2.jpg",
+      "/images/pondicherry-coastal-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "The Road to Serenity",
+        "date": "Oct 1 (Wednesday Night)",
+        "description": "Pack your bags and set off from Bangalore at 9:00 PM, leaving behind the hustle of the city.",
+        "day": 0,
+        "activities": [
+          "Overnight road trip filled with chatter, music, and anticipation",
+          "Watch the glowing skyline fade into the calm of the highway"
+        ]
+      },
+      {
+        "title": "Sunrise & French Heritage of Pondicherry",
+        "date": "Oct 2 (Thursday)",
+        "description": "Arrive at your homestay just in time to head to Serenity Beach.",
+        "day": 1,
+        "activities": [
+          "Sunrise at Serenity Beach - first rays painting the ocean in gold",
+          "Freshen up and hearty breakfast",
+          "French Colony exploration - cobblestone streets, mustard-yellow villas",
+          "Arulmiga Vinayaka Temple visit",
+          "Sri Aurobindo Ashram - step into silence and spiritual calm",
+          "Immaculate Conception Cathedral - 17th-century church with soaring arches",
+          "Local Pondicherry meal or café lunch (Self-Sponsored)",
+          "Marina Lighthouse climb (2 PM – 5 PM) for Bay of Bengal views",
+          "Sacred Heart Basilica - stained glass windows and kaleidoscope hues",
+          "Rock Beach sunset and evening vibes",
+          "Pondicherry nightlife - cafés with fusion menus and upbeat parties"
+        ]
+      },
+      {
+        "title": "Thrills at Sea & Colonial Echoes",
+        "date": "Oct 3 (Friday)",
+        "description": "After breakfast, make your way to Auroville.",
+        "day": 2,
+        "activities": [
+          "Auroville exploration - red dirt roads, artsy boutiques, global community",
+          "Colonial City Tour and café lunch (Self-Sponsored)",
+          "Ananda Ranga Pillai Mansion - 18th-century French-Indian history",
+          "French War Memorial - solemn tribute under afternoon sun",
+          "Paradise Beach boat ride across backwaters",
+          "Water adventures - jet skiing, speed boating, or beach relaxation",
+          "Café crawl or Pondicherry nightlife with dance and laughter"
+        ]
+      },
+      {
+        "title": "Mystical Mangroves of Pichavaram",
+        "date": "Oct 4 (Saturday)",
+        "description": "Wake up early, have breakfast, and set off for Pichavaram Mangrove Forest.",
+        "day": 3,
+        "activities": [
+          "Boat ride through Pichavaram Mangrove Forest - green tunnels and magical canals",
+          "Bird watching - herons, kingfishers, and crabs among mangrove roots",
+          "Kayaking or water-based activities in the unique ecosystem",
+          "Lunch en route or in Pichavaram (Self-Sponsored) with coastal delicacies",
+          "Return to Pondicherry by late afternoon",
+          "Botanical Garden - exotic plant species and colonial landscaping",
+          "Bharathi Park - fountains and grand monuments",
+          "Seaside café dinner with salt air and temple silhouettes",
+          "Begin return journey to Bangalore filled with stories and memories"
+        ]
+      },
+      {
+        "title": "Return to Bangalore",
+        "date": "Oct 5 (Sunday Morning)",
+        "description": "Reach Bangalore by late night, hearts full and cameras packed with moments.",
+        "day": 4,
+        "activities": []
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.535294+00:00",
+    "exclusions": [
+      "Entry charges (if applicable)",
+      "Activity charges (e.g., Kayaking)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "both",
+    "title": "Coastal Itinerary: Pondicherry – Pichavaram – Auroville",
+    "inclusions": [
+      "Travel to & from Bangalore to Pondicherry in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)",
+      "3 meals: 3 breakfasts (Day 1, Day 2, Day 3) 🍽️",
+      "Accommodation on 2–4 sharing basis, with cots/floor mattress (separate for guys and girls)",
+      "Local guide and outdoor trek leader from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.197930+00:00",
+    "duration": 5,
+    "tags": [
+      "adventure",
+      "mountains",
+      "coffee-plantations",
+      "waterfalls",
+      "jeep-safari",
+      "coorg",
+      "chikmagalur",
+      "elephant-camp",
+      "cultural",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Embark on an extended journey through Karnataka's coffee country, exploring the misty hills of Coorg and Chikmagalur. From off-road jeep adventures and waterfall treks to plantation walks and elephant encounters, this 5-day trip offers the perfect blend of adventure, culture, and natural beauty.",
+    "id": 17,
+    "price": "10498.00",
+    "images": [
+      "/images/coorg-chikmagalur-1.jpg",
+      "/images/coorg-chikmagalur-2.jpg",
+      "/images/coorg-chikmagalur-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Departure from Bangalore",
+        "date": "Oct 1 (Wednesday Night)",
+        "description": "Board your vehicle at night and set off on an overnight road journey filled with laughter, music, and anticipation.",
+        "day": 0,
+        "activities": [
+          "Overnight road journey filled with laughter, music, and anticipation",
+          "Sleep under the hum of the moving bus as the city lights fade into silence"
+        ]
+      },
+      {
+        "title": "Coorg – Hills, Plantations & Sunset",
+        "date": "Oct 2 (Thursday)",
+        "description": "Wake up to the misty hills of Coorg and explore plantations and viewpoints.",
+        "day": 1,
+        "activities": [
+          "Arrival & Homestay Check-In - Wake up to misty hills and hearty Kodava breakfast",
+          "Off-Road Jeep Ride to Mandalpatti - Panoramic views of rolling green mountains",
+          "Abbey Falls Visit - Roaring falls surrounded by dense forests and pepper plantations",
+          "Lunch (Self-Sponsored) – Try authentic local Kodava dishes",
+          "Plantation Walk & Wine Tasting - Learn about coffee, pepper, cardamom life cycles and fruit wine tasting",
+          "Omkareshwara Temple & Raja's Seat - Indo-Islamic architecture and sunset viewpoints",
+          "Evening at the Homestay - Campfire, local stories, Coorg-style dinner"
+        ]
+      },
+      {
+        "title": "Coorg → Chikmagalur",
+        "date": "Oct 3 (Friday)",
+        "description": "Transfer from Coorg to Chikmagalur with wildlife and nature experiences.",
+        "day": 2,
+        "activities": [
+          "Morning Coffee & Breakfast - Estate-brewed coffee with mist drifting across plantations",
+          "Harangi Elephant Camp - Meet gentle giants, feed them, witness playful side (closes by 10:30 AM)",
+          "Cauvery Nisargadhama - Hanging bridges and bamboo groves on river island",
+          "Lunch (Self-Sponsored) – Try authentic local Kodava dishes",
+          "Transfer to Chikmagalur - Scenic drive to emerald hills above coffee country",
+          "Check into forest homestay and unwind",
+          "Dinner & Campfire - Good food, laughter, and music by the fire"
+        ]
+      },
+      {
+        "title": "Chikmagalur – Peaks & Waterfalls",
+        "date": "Oct 4 (Saturday)",
+        "description": "Explore Chikmagalur's highest peaks and hidden waterfalls.",
+        "day": 3,
+        "activities": [
+          "Breakfast & Start the Day - Fresh filter coffee and homely breakfast",
+          "Baba Budan Giri Peak - Legendary peak where coffee first found roots in India",
+          "Jhari / Dabdabe / Buttermilk Falls - Jeep ride and jungle trek to hidden waterfalls",
+          "Lunch (Self-Sponsored) – Relish Malnad-style delicacies (bring empty lunch boxes)",
+          "Mullayangiri Peak - Karnataka's highest peak via thrilling jeep trails and sunset views",
+          "Evening Back at the Homestay - Coffee, dinner, music, and dance by the fire"
+        ]
+      },
+      {
+        "title": "Chikmagalur – Waterfalls & Return",
+        "date": "Oct 5 (Sunday)",
+        "description": "Final adventures in Chikmagalur before returning to Bangalore.",
+        "day": 4,
+        "activities": [
+          "Breakfast & Check-Out - Wholesome breakfast before final adventures",
+          "Hebbe Falls - Forest trails and trek to stunning waterfall in the Ghats",
+          "Lunch (Self-Sponsored) – Relish Malnad-style delicacies (bring empty lunch boxes)",
+          "Z Point Viewpoint - Windy cliff-edge with 360° panoramas",
+          "Kalathgiri Temple - Serene temple surrounded by nature",
+          "Evening Departure - Set off for Bangalore by 5:00 PM with dinner stop en route",
+          "Reach Bangalore by 10 PM (Approx)"
+        ]
+      }
+    ],
+    "difficulty": "moderate",
+    "updated_at": "2025-09-29T09:56:07.551556+00:00",
+    "exclusions": [
+      "Entry charges to the places(if applicable)",
+      "Activity charges/ Jeep charges (e.g., Kayaking, speed boating)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "both",
+    "title": "Coorg + Chikmagalur Extended Itinerary",
+    "inclusions": [
+      "Travel to & from Bangalore to Coorg-Chikmagalur in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)",
+      "9 meals: 4 breakfast(Day 1,Day 2,Day 3 & Day 4),2 Lunch(Day 3 & Day 4), Dinner(Day 1, Day 2 & Day3) 🍽️",
+      "Accommodation will be on a 2–4 sharing basis with a mix of cots and floor mattresses, arranged separately for men and women",
+      "Local guide and outdoor trek leader from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.209268+00:00",
+    "duration": 4,
+    "tags": [
+      "cultural",
+      "beach",
+      "adventure",
+      "huli-vesha",
+      "temple",
+      "coastal",
+      "dasara",
+      "tiger-dance",
+      "mangalore",
+      "agumbe",
+      "rainforest",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Trade the city lights of Bangalore for Udupi's serene backwaters, golden beaches, and vibrant cultural traditions. This 4-day journey blends adventure and heritage – from kayaking in the Suvarna River and parasailing at Malpe, to witnessing the electrifying Huli Vesha tiger dance in Mangalore, exploring Agumbe's rainforests, and soaking in temple vibes at Sri Krishna Matha. Add in coastal delicacies, lively fish markets, and stunning sunsets – and you've got the perfect mix of sea, soul, and stories.",
+    "id": 18,
+    "price": "9449.00",
+    "images": [
+      "/images/udupi-mangalore-agumbe-1.jpg",
+      "/images/udupi-mangalore-agumbe-2.jpg",
+      "/images/udupi-mangalore-agumbe-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Overnight Journey from Bangalore",
+        "date": "Oct 1 (Wednesday)",
+        "description": "Board your vehicle in the evening. As the city lights fade, settle in for an overnight ride through Karnataka's highways.",
+        "day": 0,
+        "activities": []
+      },
+      {
+        "title": "Backwaters, Beaches & Coastal Culture",
+        "date": "Oct 2 (Thursday)",
+        "description": "Arrival in Udupi & Homestay Check-In. Wake up to refreshing coastal air as you arrive in Udupi.",
+        "day": 1,
+        "activities": [
+          "Authentic Coastal Breakfast: neer dosa, goli baje, or Udupi buns with chutney",
+          "Kayaking in Suvarna River Backwaters",
+          "Toddy Tasting: traditional fermented coconut drink",
+          "Lunch: Coastal Feast - seafood thali or Udupi-style vegetarian meal",
+          "Beaches Trail: Malpe, Mattu & Pithrody beaches",
+          "Evening at Kapu Beach & Lighthouse",
+          "Dinner and overnight stay at homestay"
+        ]
+      },
+      {
+        "title": "Temples, Traditions & Dasara Festivities",
+        "date": "Oct 3 (Friday)",
+        "description": "Explore Udupi's cultural heritage and witness Dasara festivities in Mangalore.",
+        "day": 2,
+        "activities": [
+          "Malpe Fish Market Visit - early morning fresh catch auction",
+          "Beach time and relaxation",
+          "Return to homestay, breakfast, and check-out",
+          "Sri Krishna Temple Darshan - world-famous temple with Kanakana Kindi",
+          "Lunch: wholesome sattvic meal on banana leaves",
+          "Drive to Mangalore – Huli Vesha Celebrations (tiger dance during Dasara)",
+          "Evening at Pabba's: Gudbud ice cream and snacks",
+          "Dinner in Mangalore and return to homestay",
+          "Overnight stay at homestay"
+        ]
+      },
+      {
+        "title": "Agumbe – Rainforests & Sunset",
+        "date": "Oct 4 (Saturday)",
+        "description": "Explore Agumbe's rainforests and enjoy stunning sunset views.",
+        "day": 3,
+        "activities": [
+          "Breakfast & Departure for Agumbe (approx. 2.5 hrs drive)",
+          "Kundadri Hills – Jain temple with sweeping Western Ghats views",
+          "Malgudi Days House – iconic house from classic TV series",
+          "Lunch: Malnad Style - akki rotti, pathrode, avarekalu dishes",
+          "Agumbe Sunset Point – stunning sunset over misty ghats",
+          "Evening departure back to Bangalore with dinner en route"
+        ]
+      },
+      {
+        "title": "Back to Bangalore",
+        "date": "Early Morning Oct 5 (Sunday)",
+        "description": "Arrive in Bangalore early morning around 5:30 AM.",
+        "day": 4,
+        "activities": []
+      }
+    ],
+    "difficulty": "easy",
+    "updated_at": "2025-09-29T09:56:07.569892+00:00",
+    "exclusions": [
+      "Entry charges (if applicable)",
+      "Activity charges (e.g., Kayaking)",
+      "Meals other than those mentioned in the itinerary",
+      "Any kind of personal expenses",
+      "5% GST",
+      "Any kind of insurances (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list"
+    ],
+    "featured_status": "popular",
+    "title": "Waves, Temples & Tiger Stripes – Udupi, Mangalore & Agumbe Coastal Escape",
+    "inclusions": [
+      "Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)",
+      "4 meals: 3 breakfasts (Day 1 & Day 2), 1 Lunch(Day 2) and 1 dinner (Day 1) 🍽️",
+      "Accommodation on 2–4 sharing basis, with cots/floor mattress (separate for guys and girls)",
+      "Local guide and outdoor trek leader from Adventure Buddha"
+    ]
+  },
+  {
+    "created_at": "2025-09-27T22:42:38.220859+00:00",
+    "duration": 3,
+    "tags": [
+      "cultural",
+      "heritage",
+      "adventure",
+      "hampi",
+      "temples",
+      "boulders",
+      "sunset",
+      "cliff-jumping",
+      "coracle",
+      "hippie",
+      "vijayanagara",
+      "hulivesha",
+      "karnataka"
+    ],
+    "description": "Step away from Bangalore's bustle and into Hampi's timeless world of boulders, temples, and river valleys. This 2-day journey is a blend of heritage and adventure – from wandering through the grand ruins of the Vijayanagara Empire and watching sunsets from Hemakuta and Anjanadri Hills, to feeling the rush of cliff jumping at Sanapur Lake and drifting on coracle rides. Add in vibrant hippie cafés, soulful music, and the charm of rustic stays – and you've got a weekend escape where history, thrill, and tranquility meet.",
+    "id": 19,
+    "price": "4999.00",
+    "images": [
+      "/images/hampi-weekend-1.jpg",
+      "/images/hampi-weekend-2.jpg",
+      "/images/hampi-weekend-3.jpg"
+    ],
+    "itinerary": [
+      {
+        "title": "Departure from Bangalore",
+        "date": "Oct 3 (Friday Night)",
+        "description": "Departure from Bangalore at 9:00 PM. Overnight journey to Hampi in a comfortable Non-AC coach/TT.",
+        "day": 0,
+        "activities": []
+      },
+      {
+        "title": "Heritage & Sunset",
+        "date": "Oct 4 (Saturday)",
+        "description": "Reach Hampi early morning and explore the Vijayanagara Empire heritage sites.",
+        "day": 1,
+        "activities": [
+          "Freshen up and breakfast (washrooms arranged; luggage drop until 11 AM check-in)",
+          "Explore Heritage Side: Virupaksha Temple, Lotus Mahal, Elephant Stables, Vittala Temple (Stone Chariot)",
+          "Visit Shivalinga & Ugra Narasimha statue, Kadalekalu Ganapathi",
+          "Lunch (self-sponsored at local restaurant)",
+          "Sunset at Hemakuta Hills - panoramic views with golden hues over ruins",
+          "Return to homestay, freshen up and relax",
+          "Dinner at café - unwind with music and chilled-out Hampi vibe"
+        ]
+      },
+      {
+        "title": "Adventure & Lakeside Fun",
+        "date": "Oct 5 (Sunday)",
+        "description": "Hike to Anjanadri Hill and enjoy adventure at Sanapur Lake.",
+        "day": 2,
+        "activities": [
+          "Breakfast at homestay",
+          "Hike to Anjanadri Hill - birthplace of Lord Hanuman with panoramic views",
+          "Lunch (self-sponsored)",
+          "Adventure at Sanapur Lake - cliff jumping and coracle rides (self-sponsored)",
+          "Relax and capture scenic photos of lake and waterfalls",
+          "Visit Tungabhadra Dam - serene sunset views",
+          "Dinner at Hospet (self-sponsored)",
+          "Depart for Bangalore at 9:30 PM",
+          "Reach Bangalore by 4:00 AM (approx)"
+        ]
+      }
+    ],
+    "difficulty": "moderate",
+    "updated_at": "2025-09-29T09:56:07.582416+00:00",
+    "exclusions": [
+      "Meals other than those mentioned in the itinerary",
+      "Coracle ride at Sanapur Lake (self-sponsored)",
+      "Cliff jumping at Sanapur Lake (self-sponsored)",
+      "Any kind of personal expenses",
+      "Any kind of insurance (health, life, accidental, medical, etc.)",
+      "Anything not mentioned in the inclusions list",
+      "5% GST"
+    ],
+    "featured_status": "both",
+    "title": "Hampi Weekend Getaway – Heritage, Hills & Hippie Vibes",
+    "inclusions": [
+      "Travel from Bangalore to Hampi homestay in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)",
+      "3 meals: 2 breakfasts (Day 1 & Day 2), and 1 dinner (Day 1) 🍽️",
+      "Accommodation in hut cottages with cots and floor mattresses on a multiple-sharing basis",
+      "Local guide and outdoor trek leader from Adventure Buddha",
+      "Entry charges to all the listed places in the itinerary"
+    ]
+  }
+]

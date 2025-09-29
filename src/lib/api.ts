@@ -109,13 +109,16 @@ interface PaginatedResponse<T> {
 
 class ApiClient {
   private baseUrl: string;
+  private fallbackUrl: string;
+  private isUsingFallback: boolean = false;
 
   constructor() {
     this.baseUrl = config.API_BASE_URL;
+    this.fallbackUrl = config.FALLBACK_API_URL;
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+    const url = `${this.isUsingFallback ? this.fallbackUrl : this.baseUrl}${endpoint}`;
     
     // Add timeout and retry logic for VM API
     const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000) => {
@@ -135,20 +138,38 @@ class ApiClient {
       }
     };
     
-    const response = await fetchWithTimeout(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      ...options,
-    });
+    try {
+      const response = await fetchWithTimeout(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
+        ...options,
+      });
 
-    if (!response.ok) {
-      console.error(`API Error: ${response.status} ${response.statusText} for ${url}`);
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        console.error(`API Error: ${response.status} ${response.statusText} for ${url}`);
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      // If we successfully connected, reset fallback flag
+      if (this.isUsingFallback) {
+        console.log('✅ VM API is back online, switching back from fallback');
+        this.isUsingFallback = false;
+      }
+
+      return response.json();
+    } catch (error) {
+      // If primary API fails and we're not already using fallback, try fallback
+      if (!this.isUsingFallback && this.fallbackUrl !== this.baseUrl) {
+        console.warn(`⚠️ Primary API failed (${this.baseUrl}), switching to fallback (${this.fallbackUrl})`);
+        this.isUsingFallback = true;
+        return this.request(endpoint, options); // Retry with fallback
+      }
+      
+      console.error(`❌ API request failed for ${url}:`, error);
+      throw error;
     }
-
-    return response.json();
   }
 
   // Trip APIs
@@ -174,19 +195,29 @@ class ApiClient {
         return [];
       }
       
-      // Process images to convert relative URLs to absolute URLs
+      // Process and normalize trip data
       return trips.map(trip => ({
         ...trip,
+        id: String(trip.id), // Convert id to string
+        price: typeof trip.price === 'string' ? parseFloat(trip.price) : trip.price, // Convert price to number
         images: trip.images?.map((img: string) => 
-          img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
-        ) || []
+          img.startsWith('/') ? `${this.baseUrl.replace('/api', '')}${img}` : img
+        ) || [],
+        // Ensure required fields have defaults
+        slug: trip.slug || `trip-${trip.id}`,
+        rating: trip.rating || 0,
+        reviewCount: trip.reviewCount || 0,
+        inclusions: trip.inclusions || [],
+        exclusions: trip.exclusions || [],
+        itinerary: trip.itinerary || [],
+        upcomingSlots: trip.upcomingSlots || [],
+        difficulty: trip.difficulty || 'moderate',
       }));
       
     } catch (error) {
-      console.error('Failed to fetch trips from VM API:', error);
+      console.error('Failed to fetch trips from API:', error);
       
       // Return empty array for now - UI will handle loading states
-      // Could add mock data here if needed
       return [];
     }
   }
@@ -198,7 +229,7 @@ class ApiClient {
     return {
       ...response,
       images: response.images?.map((img: string) => 
-        img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
+        img.startsWith('/') ? `${this.baseUrl.replace('/api', '')}${img}` : img
       ) || []
     };
   }
