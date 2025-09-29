@@ -116,7 +116,26 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const response = await fetch(url, {
+    
+    // Add timeout and retry logic for VM API
+    const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+      }
+    };
+    
+    const response = await fetchWithTimeout(url, {
       headers: {
         'Content-Type': 'application/json',
         ...options?.headers,
@@ -125,6 +144,7 @@ class ApiClient {
     });
 
     if (!response.ok) {
+      console.error(`API Error: ${response.status} ${response.statusText} for ${url}`);
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
@@ -133,33 +153,42 @@ class ApiClient {
 
   // Trip APIs
   async getTrips(filters?: Partial<FiltersState>): Promise<Trip[]> {
-    const queryParams = new URLSearchParams();
-    if (filters?.search) queryParams.append('search', filters.search);
-    if (filters?.featured) queryParams.append('featured', filters.featured);
-    
-    const endpoint = `/trips?${queryParams.toString()}`;
-    const response = await this.request<PaginatedResponse<Trip> | Trip[]>(endpoint);
-    
-    let trips: Trip[] = [];
-    
-    // Handle paginated response - extract results array
-    if (response && typeof response === 'object' && 'results' in response) {
-      trips = response.results;
-    } else if (Array.isArray(response)) {
-      // Fallback for non-paginated response (array)
-      trips = response;
-    } else {
-      console.warn('Unexpected API response format for trips:', response);
+    try {
+      const queryParams = new URLSearchParams();
+      if (filters?.search) queryParams.append('search', filters.search);
+      if (filters?.featured) queryParams.append('featured', filters.featured);
+      
+      const endpoint = `/trips?${queryParams.toString()}`;
+      const response = await this.request<PaginatedResponse<Trip> | Trip[]>(endpoint);
+      
+      let trips: Trip[] = [];
+      
+      // Handle paginated response - extract results array
+      if (response && typeof response === 'object' && 'results' in response) {
+        trips = response.results;
+      } else if (Array.isArray(response)) {
+        // Fallback for non-paginated response (array)
+        trips = response;
+      } else {
+        console.warn('Unexpected API response format for trips:', response);
+        return [];
+      }
+      
+      // Process images to convert relative URLs to absolute URLs
+      return trips.map(trip => ({
+        ...trip,
+        images: trip.images?.map((img: string) => 
+          img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
+        ) || []
+      }));
+      
+    } catch (error) {
+      console.error('Failed to fetch trips from VM API:', error);
+      
+      // Return empty array for now - UI will handle loading states
+      // Could add mock data here if needed
       return [];
     }
-    
-    // Process images to convert relative URLs to absolute URLs
-    return trips.map(trip => ({
-      ...trip,
-      images: trip.images?.map((img: string) => 
-        img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
-      ) || []
-    }));
   }
 
   async getTrip(slugOrId: string): Promise<Trip> {

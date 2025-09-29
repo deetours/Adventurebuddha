@@ -77,14 +77,14 @@ export default function LandingPage() {
         }
       };
       
-      // Fallback timer - show after 15 seconds if user hasn't scrolled
+      // Fallback timer - show after 10 seconds if user hasn't scrolled
       const timer = setTimeout(() => {
         if (!scrollTriggered) {
           setIsLeadModalOpen(true);
           localStorage.setItem('leadModalShown', 'true');
           window.removeEventListener('scroll', handleScroll);
         }
-      }, 15000); // 15 seconds fallback
+      }, 10000); // 10 seconds fallback
       
       window.addEventListener('scroll', handleScroll, { passive: true });
       
@@ -93,6 +93,20 @@ export default function LandingPage() {
         window.removeEventListener('scroll', handleScroll);
       };
     }
+  }, []);
+
+  // Dev helper - press 'L' key to reset lead modal and trigger it (only in development)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (process.env.NODE_ENV === 'development' && e.key === 'L' && e.ctrlKey) {
+        localStorage.removeItem('leadModalShown');
+        setIsLeadModalOpen(true);
+        console.log('Lead modal manually triggered');
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   // Fetch featured trips

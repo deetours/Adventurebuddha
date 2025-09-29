@@ -25,13 +25,28 @@ export default function TripsPage() {
     duration: searchParams.get('duration') ? parseInt(searchParams.get('duration')!) : undefined,
   }));
 
-  // Fetch trips with filters
-  const { data: trips = [], error } = useQuery({
+  // Fetch trips data with error handling
+  const { data: trips = [], isLoading, error } = useQuery({
     queryKey: ['trips', filters],
-    queryFn: () => apiClient.getTrips(filters as Partial<FiltersState>),
-  });
-
-  // Safe array handling for trips data
+    queryFn: async () => {
+      console.log('🔍 Fetching trips from VM API with filters:', { 
+        filters,
+        apiUrl: 'http://68.233.115.38:8000/api'
+      });
+      
+      try {
+        const result = await apiClient.getTrips(filters);
+        console.log('✅ Successfully fetched trips:', result.length, 'trips');
+        return result;
+      } catch (error) {
+        console.error('❌ Failed to fetch trips from VM:', error);
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });  // Safe array handling for trips data
   const safeTrips = useMemo(() => {
     if (!Array.isArray(trips)) {
       console.warn('Trips data is not an array:', trips);
@@ -293,6 +308,54 @@ export default function TripsPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
           <p className="text-gray-600">Failed to load trips. Please try again later.</p>
+          <div className="text-xs text-gray-400 mt-2">
+            API Endpoint: http://68.233.115.38:8000/api/trips/
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Retry Loading
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state display
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading trips from server...</div>
+          <div className="text-xs text-gray-400 mt-2">
+            Connecting to: http://68.233.115.38:8000/api
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No trips found state
+  if (!trips || trips.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center p-8">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <div className="text-yellow-600 text-lg font-semibold mb-2">
+              No Trips Available
+            </div>
+            <div className="text-yellow-700 text-sm mb-4">
+              We couldn't find any trips at the moment. Please check back later.
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
         </div>
       </div>
     );

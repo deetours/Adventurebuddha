@@ -660,7 +660,8 @@ const MorphingCTAButtons: React.FC = () => {
 
   // Close modal handler
   const closeBookingModal = () => {
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'unset';
+    document.body.style.position = 'static';
     setShowBookingModal(false);
   };
 
@@ -709,9 +710,11 @@ const MorphingCTAButtons: React.FC = () => {
               e.preventDefault();
               e.stopPropagation();
               if (button.id === 'book') {
-                // Open booking modal immediately
+                // Open booking modal with proper scroll management
                 if (!showBookingModal) {
                   document.body.style.overflow = 'hidden';
+                  document.body.style.position = 'fixed';
+                  document.body.style.width = '100%';
                   setShowBookingModal(true);
                 }
                 return;
@@ -830,10 +833,10 @@ const MorphingCTAButtons: React.FC = () => {
       
       {/* Booking Modal - Fixed positioning, mobile-friendly */}
       {showBookingModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4">
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -857,14 +860,14 @@ const MorphingCTAButtons: React.FC = () => {
             {/* Close Button */}
             <button
               onClick={closeBookingModal}
-              className="absolute top-3 right-3 z-20 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
+              className="absolute top-3 right-3 z-[10000] w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
               aria-label="Close booking modal"
             >
               <X className="w-4 h-4 text-white" />
             </button>
             
             {/* Scrollable Content Container */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto bg-white">
               <BookingForm onClose={closeBookingModal} />
             </div>
           </motion.div>
