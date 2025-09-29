@@ -5,7 +5,8 @@ import type {
   SeatStatus, 
   Booking, 
   User,
-  FiltersState 
+  FiltersState,
+  Slot
 } from './types';
 
 // Dashboard Types
@@ -115,13 +116,21 @@ class ApiClient {
   constructor() {
     this.baseUrl = config.API_BASE_URL;
     this.fallbackUrl = config.FALLBACK_API_URL;
+    
+    // Use fallback immediately if base URL is localhost (fallback server)
+    if (this.baseUrl.includes('127.0.0.1') || this.baseUrl.includes('localhost')) {
+      this.isUsingFallback = true;
+      console.log('🔄 Using fallback server for API calls');
+    }
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${this.isUsingFallback ? this.fallbackUrl : this.baseUrl}${endpoint}`;
     
-    // Add timeout and retry logic for VM API
-    const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000) => {
+    console.log(`🌐 API Request: ${url}`);
+    
+    // Add timeout for requests
+    const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 10000) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
       
@@ -148,26 +157,24 @@ class ApiClient {
       });
 
       if (!response.ok) {
-        console.error(`API Error: ${response.status} ${response.statusText} for ${url}`);
+        console.error(`❌ API Error: ${response.status} ${response.statusText} for ${url}`);
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
 
-      // If we successfully connected, reset fallback flag
-      if (this.isUsingFallback) {
-        console.log('✅ VM API is back online, switching back from fallback');
-        this.isUsingFallback = false;
-      }
-
-      return response.json();
+      const data = await response.json();
+      console.log(`✅ API Success: ${url} - Got data:`, data);
+      
+      return data;
     } catch (error) {
-      // If primary API fails and we're not already using fallback, try fallback
+      console.error(`❌ API request failed for ${url}:`, error);
+      
+      // If primary API fails and we have fallback, try fallback
       if (!this.isUsingFallback && this.fallbackUrl !== this.baseUrl) {
-        console.warn(`⚠️ Primary API failed (${this.baseUrl}), switching to fallback (${this.fallbackUrl})`);
+        console.warn(`⚠️ Switching to fallback API: ${this.fallbackUrl}`);
         this.isUsingFallback = true;
         return this.request(endpoint, options); // Retry with fallback
       }
       
-      console.error(`❌ API request failed for ${url}:`, error);
       throw error;
     }
   }
@@ -179,7 +186,8 @@ class ApiClient {
       if (filters?.search) queryParams.append('search', filters.search);
       if (filters?.featured) queryParams.append('featured', filters.featured);
       
-      const endpoint = `/trips?${queryParams.toString()}`;
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/trips/?${queryString}` : `/trips/`;
       const response = await this.request<PaginatedResponse<Trip> | Trip[]>(endpoint);
       
       let trips: Trip[] = [];
@@ -261,13 +269,19 @@ class ApiClient {
   }
 
   // Booking APIs
+  async getTripSlots(tripId: string): Promise<Slot[]> {
+    return this.request(`/trips/${tripId}/slots/`);
+  }
+
   async createBooking(data: {
-    slot_id: string;
-    seat_ids: string[];
-    lock_token: string;
-    user_id: string;
-  }): Promise<{ booking_id: string; status: string; amount: number }> {
-    return this.request('/bookings', {
+    tripId: string;
+    slotId: string;
+    travelerCount: number;
+    customerDetails: Record<string, unknown>;
+    totalAmount: number;
+    specialRequests: string;
+  }): Promise<{ booking_id: string; status: string }> {
+    return this.request('/bookings/', {
       method: 'POST',
       body: JSON.stringify(data)
     });

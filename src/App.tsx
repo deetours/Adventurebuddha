@@ -31,6 +31,7 @@ import SupportPage from './pages/SupportPage';
 import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
+import TestApiPage from './pages/TestApiPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -57,6 +58,7 @@ function App() {
               <Route path="/" element={<AppShell />}>
                 <Route index element={<LandingPage />} />
                 <Route path="trips" element={<TripsPage />} />
+                <Route path="test-api" element={<TestApiPage />} />
                 <Route path="trips/:slug" element={<TripDetailsPage />} />
                 <Route path="about" element={<AboutPage />} />
                 <Route path="blog" element={<BlogPage />} />

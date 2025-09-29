@@ -11,6 +11,7 @@ import { FeaturedDestinations } from '../components/home/FeaturedDestinations';
 import { NewsletterSignup } from '../components/home/NewsletterSignup';
 import { TestimonialsCarousel } from '../components/home/TestimonialsCarousel';
 import { LeadCaptureModal } from '../components/home/LeadCaptureModal';
+import MorphingCTAButtons from '../components/home/MorphingCTAButtons';
 
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../lib/api';
@@ -58,61 +59,55 @@ export default function LandingPage() {
   const fps = usePerformanceMonitor();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
+  // DEBUG: Log modal state
+  useEffect(() => {
+    console.log('Lead modal state:', isLeadModalOpen);
+  }, [isLeadModalOpen]);
+
   // Performance-based rendering decisions
   const enableHeavyAnimations = fps >= 50;
   const enableBackgroundAnimations = fps >= 40;
 
-  // Auto-open lead modal after user engagement (scroll or time)
+  // Auto-open lead modal after 10 seconds on landing for engagement (once per session)
   useEffect(() => {
-    const hasSeenModal = localStorage.getItem('leadModalShown');
-    if (!hasSeenModal) {
-      let scrollTriggered = false;
-      
-      const handleScroll = () => {
-        if (window.scrollY > 800 && !scrollTriggered) { // After hero section
-          scrollTriggered = true;
-          setIsLeadModalOpen(true);
-          localStorage.setItem('leadModalShown', 'true');
-          window.removeEventListener('scroll', handleScroll);
-        }
-      };
-      
-      // Fallback timer - show after 10 seconds if user hasn't scrolled
-      const timer = setTimeout(() => {
-        if (!scrollTriggered) {
-          setIsLeadModalOpen(true);
-          localStorage.setItem('leadModalShown', 'true');
-          window.removeEventListener('scroll', handleScroll);
-        }
-      }, 10000); // 10 seconds fallback
-      
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('scroll', handleScroll);
-      };
-    }
+    // Don't auto-open again if user closed it in this session
+    const dismissed = sessionStorage.getItem('leadModalShown') === 'true';
+    if (dismissed) return;
+
+    const timer = window.setTimeout(() => {
+      setIsLeadModalOpen(true);
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
-  // Dev helper - press 'L' key to reset lead modal and trigger it (only in development)
+  // Close handler that marks modal as shown/closed for this session
+  const handleLeadModalClose = () => {
+    setIsLeadModalOpen(false);
+    sessionStorage.setItem('leadModalShown', 'true');
+  };
+
+    // Dev helper - press 'L' key to reset lead modal and trigger it (only in development)
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (process.env.NODE_ENV === 'development' && e.key === 'L' && e.ctrlKey) {
-        localStorage.removeItem('leadModalShown');
-        setIsLeadModalOpen(true);
-        console.log('Lead modal manually triggered');
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    if (process.env.NODE_ENV === 'development') {
+      const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === 'l') {
+          console.log('Dev: Resetting and triggering lead modal');
+          sessionStorage.removeItem('leadModalShown');
+          setIsLeadModalOpen(true);
+        }
+      };
+      
+      window.addEventListener('keydown', handleKeyPress);
+      return () => window.removeEventListener('keydown', handleKeyPress);
+    }
   }, []);
 
   // Fetch featured trips
   const { data: featuredTrips = [] } = useQuery({
     queryKey: ['featured-trips'],
-    queryFn: () => apiClient.getTrips({ featured: 'featured,both' }),
+    queryFn: () => apiClient.getTrips({ featured: 'featured' }),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Safe array handling for featured trips
@@ -189,7 +184,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced Trip Stats Section */}
+      {/* Morphing CTA Buttons */}
+      <section className="py-12 bg-gradient-to-r from-orange-50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <MorphingCTAButtons />
+        </div>
+      </section>
+
+      {/* Trip Stats Section */}
       <TripStats />
 
       {/* Featured Trips */}
@@ -803,10 +805,14 @@ export default function LandingPage() {
       {/* Lead Capture Modal */}
       <LeadCaptureModal
         isOpen={isLeadModalOpen}
-        onClose={() => setIsLeadModalOpen(false)}
+        onClose={handleLeadModalClose}
         onLeadCaptured={(leadData) => {
           console.log('Lead captured:', leadData);
-          // You can add additional logic here like analytics tracking
+          // Mark as shown/closed for this session and close the modal
+          sessionStorage.setItem('leadModalShown', 'true');
+          setIsLeadModalOpen(false);
+          // You can add analytics tracking here
+          // Example: gtag('event', 'lead_captured', { interested_trips: leadData.interestedTrips.length });
         }}
       />
     </div>

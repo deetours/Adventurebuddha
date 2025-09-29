@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2 } from 'lucide-react';
+import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2, Clock, Award, TrendingUp, Camera } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { useQuery } from '@tanstack/react-query';
@@ -42,21 +42,21 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
         delay: index * 0.1,
         duration: 0.5
       }}
-      whileHover={{ y: -10 }}
+      whileHover={{ y: -15, scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       className="group relative cursor-pointer"
       data-destination-card
     >
-      <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl transform-gpu">
+      <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-2xl transform-gpu">
         {/* Front Card */}
         <AnimatePresence mode="wait">
           {!isFlipped ? (
             <motion.div
               key="front"
-              initial={{ opacity: 1 }}
+              initial={{ opacity: 1, rotateY: 0 }}
               exit={{ opacity: 0, rotateY: -90 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
               className="absolute inset-0"
             >
               {/* Background Image */}
@@ -64,24 +64,25 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                 <img
                   src={destination.image || '/images/default-trip.jpg'}
                   alt={destination.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               </div>
 
               {/* Floating Elements */}
-              <div className="absolute top-4 left-4 z-20">
-                <Badge className="bg-white/90 text-gray-800 border-0 shadow-lg backdrop-blur-sm">
-                  <MapPin className="h-3 w-3 mr-1" />
+              <div className="absolute top-6 left-6 z-20">
+                <Badge className="bg-white/95 text-gray-800 border-0 shadow-xl backdrop-blur-md px-4 py-2 text-sm font-semibold">
+                  <MapPin className="h-4 w-4 mr-2" />
                   {destination.country || 'India'}
                 </Badge>
               </div>
 
               {/* Rating Badge */}
-              <div className="absolute top-4 right-4 z-20">
-                <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center shadow-lg">
-                  <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                  <span className="text-sm font-bold text-gray-800">4.5</span>
+              <div className="absolute top-6 right-6 z-20">
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl px-4 py-2 flex items-center shadow-xl border border-white/20">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current mr-2" />
+                  <span className="text-sm font-bold text-gray-800">{destination.rating || 4.5}</span>
+                  <span className="text-xs text-gray-600 ml-1">({destination.tripsCount || 1})</span>
                 </div>
               </div>
 
@@ -91,13 +92,13 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                   e.stopPropagation();
                   setIsLiked(!isLiked);
                 }}
-                className="absolute top-4 right-16 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
-                whileHover={{ scale: 1.1 }}
+                className="absolute top-6 right-24 z-20 p-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-white/20"
+                whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
-                animate={isLiked ? { backgroundColor: "rgba(249, 115, 22, 0.9)" } : {}}
+                animate={isLiked ? { backgroundColor: "rgba(249, 115, 22, 0.95)" } : {}}
               >
                 <Heart
-                  className={`h-4 w-4 ${isLiked ? 'fill-current text-white' : 'text-gray-600'}`}
+                  className={`h-5 w-5 ${isLiked ? 'fill-current text-white' : 'text-gray-600'}`}
                 />
               </motion.button>
 
@@ -109,135 +110,210 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                     setShowVideo(true);
                   }}
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-2xl">
-                    <Play className="h-6 w-6 text-orange-600 ml-1" />
+                  <div className="bg-white/95 backdrop-blur-md rounded-full p-5 shadow-2xl border border-white/20">
+                    <Play className="h-7 w-7 text-orange-600 ml-1" />
                   </div>
                 </motion.button>
               )}
 
               {/* Content Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                <h3 className="text-2xl font-bold mb-2">
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-10">
+                <motion.h3
+                  className="text-2xl font-bold mb-3 leading-tight"
+                  animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+                >
                   {destination.name}
-                </h3>
+                </motion.h3>
 
-                <p className="text-white/90 mb-4 line-clamp-2">
+                <motion.p
+                  className="text-white/90 mb-6 line-clamp-2 text-sm leading-relaxed"
+                  animate={isHovered ? { opacity: 0.9 } : { opacity: 0.8 }}
+                >
                   {destination.description}
-                </p>
+                </motion.p>
+
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-6 text-sm">
+                    <div className="flex items-center bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                      <Users className="h-4 w-4 mr-2" />
+                      <span className="font-medium">{destination.tripsCount || 1} trips</span>
+                    </div>
+                    <div className="flex items-center bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span className="font-medium">{destination.duration || `${destination.duration || 3} days`}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm">
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      {destination.tripsCount || 1} trips
+                  <div className="flex items-center space-x-2">
+                    <div className="text-2xl font-bold text-white">
+                      ₹{destination.price?.toLocaleString() || 'Contact'}
                     </div>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {destination.duration || `${destination.duration || 3} days`}
-                    </div>
+                    <div className="text-white/70 text-sm">per person</div>
                   </div>
 
                   <Button
                     size="sm"
-                    className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                    className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-md px-6 py-2 font-semibold shadow-lg"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsFlipped(true);
                     }}
                   >
-                    <Eye className="h-4 w-4 mr-1" />
-                    Details
+                    <Eye className="h-4 w-4 mr-2" />
+                    Explore Details
                   </Button>
                 </div>
               </div>
 
               {/* Hover Glow Effect */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-3xl"
+                className="absolute inset-0 bg-gradient-to-r from-orange-500/30 to-orange-600/30 rounded-3xl"
                 initial={{ opacity: 0 }}
                 animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.3 }}
               />
             </motion.div>
           ) : (
-            /* Back Card */
+            /* Enhanced Back Card */
             <motion.div
               key="back"
               initial={{ opacity: 0, rotateY: 90 }}
               animate={{ opacity: 1, rotateY: 0 }}
               exit={{ opacity: 0, rotateY: 90 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600 p-6 flex flex-col justify-between"
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 p-8 flex flex-col justify-between"
             >
-              <div>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
                 <motion.button
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsFlipped(false);
                   }}
-                  className="mb-4 p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
-                  whileHover={{ scale: 1.1 }}
+                  className="p-3 bg-white/20 rounded-2xl hover:bg-white/30 transition-all duration-200"
+                  whileHover={{ scale: 1.1, rotate: -180 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <ArrowRight className="h-4 w-4 text-white rotate-180" />
+                  <ArrowRight className="h-5 w-5 text-white" />
                 </motion.button>
 
-                <h3 className="text-2xl font-bold text-white mb-4">{destination.name}</h3>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between text-white/90">
-                    <span className="font-medium">Best Time to Visit:</span>
-                    <span>{destination.bestTime || 'Year-round'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-white/90">
-                    <span className="font-medium">Duration:</span>
-                    <span>{destination.duration || `${destination.duration || 3} days`}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-white/90">
-                    <span className="font-medium">Starting from:</span>
-                    <span className="font-bold">₹{destination.price?.toLocaleString() || 'Contact for price'}</span>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-white font-semibold mb-3">Highlights:</h4>
-                  <ul className="space-y-2">
-                    {(destination.highlights || ['Adventure', 'Culture', 'Nature']).map((highlight, idx) => (
-                      <motion.li
-                        key={idx}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="flex items-center text-white/90 text-sm"
-                      >
-                        <div className="w-2 h-2 bg-white rounded-full mr-3 flex-shrink-0" />
-                        {highlight}
-                      </motion.li>
-                    ))}
-                  </ul>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-white/20 text-white border-white/30 px-3 py-1">
+                    <Award className="h-3 w-3 mr-1" />
+                    Premium
+                  </Badge>
                 </div>
               </div>
 
-              <div className="flex space-x-3">
-                <Button
-                  className="flex-1 bg-white text-orange-600 hover:bg-gray-100 rounded-full"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Book Now
-                </Button>
-                <Button
-                  variant="outline"
-                  className="px-4 border-white/30 text-white hover:bg-white/10 rounded-full"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Share2 className="h-4 w-4" />
-                </Button>
+              {/* Title and Rating */}
+              <div className="mb-6">
+                <h3 className="text-3xl font-bold text-white mb-2 leading-tight">{destination.name}</h3>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="flex items-center">
+                    <Star className="h-5 w-5 text-yellow-300 fill-current mr-1" />
+                    <span className="text-white font-semibold">{destination.rating || 4.5}</span>
+                    <span className="text-white/70 text-sm ml-1">({destination.tripsCount || 1} reviews)</span>
+                  </div>
+                  <div className="flex items-center">
+                    <TrendingUp className="h-4 w-4 text-green-300 mr-1" />
+                    <span className="text-white/70 text-sm">Trending</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Details Grid */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <div className="flex items-center mb-2">
+                    <Calendar className="h-5 w-5 text-orange-200 mr-2" />
+                    <span className="text-white/80 text-sm font-medium">Best Time</span>
+                  </div>
+                  <div className="text-white font-semibold">{destination.bestTime || 'Year-round'}</div>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <div className="flex items-center mb-2">
+                    <Clock className="h-5 w-5 text-orange-200 mr-2" />
+                    <span className="text-white/80 text-sm font-medium">Duration</span>
+                  </div>
+                  <div className="text-white font-semibold">{destination.duration || `${destination.duration || 3} days`}</div>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <div className="flex items-center mb-2">
+                    <Users className="h-5 w-5 text-orange-200 mr-2" />
+                    <span className="text-white/80 text-sm font-medium">Group Size</span>
+                  </div>
+                  <div className="text-white font-semibold">Max 12</div>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <div className="flex items-center mb-2">
+                    <Camera className="h-5 w-5 text-orange-200 mr-2" />
+                    <span className="text-white/80 text-sm font-medium">Difficulty</span>
+                  </div>
+                  <div className="text-white font-semibold">Easy-Moderate</div>
+                </div>
+              </div>
+
+              {/* Highlights */}
+              <div className="mb-6">
+                <h4 className="text-white font-bold mb-4 flex items-center">
+                  <Award className="h-5 w-5 mr-2 text-orange-200" />
+                  Experience Highlights
+                </h4>
+                <div className="grid grid-cols-1 gap-3">
+                  {(destination.highlights || ['Adventure', 'Culture', 'Nature', 'Local Cuisine']).slice(0, 4).map((highlight, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-center bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20"
+                    >
+                      <div className="w-3 h-3 bg-orange-300 rounded-full mr-3 flex-shrink-0" />
+                      <span className="text-white/90 text-sm font-medium">{highlight}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price and Actions */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <div>
+                    <div className="text-white/70 text-sm">Starting from</div>
+                    <div className="text-2xl font-bold text-white">₹{destination.price?.toLocaleString() || 'Contact for price'}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white/70 text-sm">per person</div>
+                    <div className="text-green-300 text-sm font-medium">Save 15%</div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-3">
+                  <Button
+                    className="flex-1 bg-white text-orange-600 hover:bg-gray-100 rounded-2xl font-bold py-3 shadow-lg"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Book Now
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="px-6 border-white/40 text-white hover:bg-white/10 rounded-2xl backdrop-blur-sm"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -250,7 +326,7 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-30 rounded-3xl"
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-30 rounded-3xl"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowVideo(false);
@@ -260,7 +336,7 @@ function DestinationCard({ destination, index }: DestinationCardProps) {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                className="w-full h-full max-w-md max-h-64 bg-black rounded-2xl overflow-hidden"
+                className="w-full h-full max-w-lg max-h-64 bg-black rounded-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 <video

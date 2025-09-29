@@ -34,7 +34,7 @@ urlpatterns = [
     # path('api/agents/', include('agents.urls')),
     # path('api/messaging/', include('messaging.urls')),
     # path('api/ai/', include('ai_agent.urls')),
-    # path('api/leads/', include('leads.urls')),
+    path('api/leads/', include('leads.urls')),
     # path('', include('dashboard.urls')),  # Dashboard URLs
     
     # Authentication URLs

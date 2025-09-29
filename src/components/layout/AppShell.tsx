@@ -11,27 +11,50 @@ import { useState, useEffect } from 'react';
 const addGlobalModalStyles = () => {
   const style = document.createElement('style');
   style.textContent = `
-    /* Modal backdrop styles */
+    /* Enhanced modal backdrop styles */
     .modal-backdrop {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
-      z-index: 1000 !important;
+      z-index: 9999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
     
-    /* Prevent body scroll when modal is open */
-    .modal-open {
+    /* Enhanced body scroll prevention */
+    body.modal-open {
       overflow: hidden !important;
       position: fixed !important;
       width: 100% !important;
+      height: 100vh !important;
+    }
+    
+    /* Enhanced chatbot positioning */
+    .chatbot-container {
+      position: fixed !important;
+      bottom: 1.5rem !important;
+      right: 1.5rem !important;
+      z-index: 9998 !important;
+      pointer-events: none !important;
+    }
+    
+    .chatbot-container > * {
+      pointer-events: auto !important;
     }
     
     /* Ensure chatbot stays above other content */
-    .chatbot-container {
+    .chatbot-toggle {
       position: fixed !important;
-      z-index: 1100 !important;
+      z-index: 9998 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .chatbot-window {
+      position: fixed !important;
+      z-index: 9997 !important;
     }
     
     /* Modal content responsive styles */
@@ -39,6 +62,11 @@ const addGlobalModalStyles = () => {
       .modal-content {
         margin: 0.5rem !important;
         max-height: calc(100vh - 1rem) !important;
+      }
+      
+      .chatbot-container {
+        bottom: 1rem !important;
+        right: 1rem !important;
       }
     }
   `;
@@ -100,7 +128,7 @@ export function AppShell() {
         <Footer />
         <Toaster />
 
-        {/* Global Chatbot */}
+        {/* Global Floating Chatbot - Always visible */}
         <div className="chatbot-container">
           <AdventureChatbot
             isOpen={isChatOpen}

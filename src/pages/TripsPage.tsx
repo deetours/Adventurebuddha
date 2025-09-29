@@ -38,6 +38,7 @@ export default function TripsPage() {
       try {
         const result = await apiClient.getTrips(filters);
         console.log('✅ Successfully fetched trips:', result.length, 'trips');
+        console.log('First trip:', result[0]);
         return result;
       } catch (error) {
         console.error('❌ Failed to fetch trips:', error);
@@ -47,6 +48,14 @@ export default function TripsPage() {
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+  
+  // Debug logging
+  console.log('🧪 TripsPage Debug:', {
+    isLoading,
+    error: error?.message,
+    tripsCount: trips?.length,
+    trips: trips?.slice(0, 2) // First 2 trips for debugging
   });  // Safe array handling for trips data
   const safeTrips = useMemo(() => {
     if (!Array.isArray(trips)) {
@@ -70,14 +79,6 @@ export default function TripsPage() {
     setSearchParams(params);
   };
 
-  // Create featured and popular trips
-  const featuredTrips = useMemo(() => {
-    return safeTrips.filter(trip => trip.featured_status === 'featured' || trip.featured_status === 'both');
-  }, [safeTrips]);
-
-  const popularTrips = useMemo(() => {
-    return safeTrips.filter(trip => trip.featured_status === 'popular' || trip.featured_status === 'both');
-  }, [safeTrips]);
   const destinations = useMemo(() => {
     const locationMap: { [key: string]: { count: number; trips: Trip[] } } = {};
     
@@ -334,7 +335,7 @@ export default function TripsPage() {
             Connecting to: {config.API_BASE_URL}
           </div>
           <div className="text-xs text-gray-400 mt-1">
-            Debug: {safeTrips.length} trips loaded so far
+            Debug: {trips?.length || 0} trips loaded so far
           </div>
         </div>
       </div>
@@ -342,23 +343,48 @@ export default function TripsPage() {
   }
 
   // No trips found state
-  if (!trips || trips.length === 0) {
+  if (!isLoading && (!trips || trips.length === 0)) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto text-center p-8">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <div className="text-yellow-600 text-lg font-semibold mb-2">
-              No Trips Available
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Discover Amazing Trips
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl">
+              From thrilling adventures to peaceful retreats, find your perfect getaway from our curated collection of trips.
+            </p>
+          </div>
+
+          {/* Advanced Filters */}
+          <AdvancedFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            totalResults={0}
+            isOpen={showAdvancedFilters}
+            onToggle={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          />
+
+          {/* Interactive Map */}
+          <div className="mb-8">
+            <InteractiveMap
+              destinations={destinations}
+              selectedDestination={selectedDestination || undefined}
+              onDestinationSelect={setSelectedDestination}
+            />
+          </div>
+
+          {/* Loading message */}
+          <div className="text-center py-12">
+            <div className="animate-pulse">
+              <div className="text-lg text-gray-600 mb-4">
+                Loading amazing trips for you...
+              </div>
+              <div className="text-sm text-gray-400">
+                Connecting to our travel database
+              </div>
             </div>
-            <div className="text-yellow-700 text-sm mb-4">
-              We couldn't find any trips at the moment. Please check back later.
-            </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
-            >
-              Refresh Page
-            </button>
           </div>
         </div>
       </div>

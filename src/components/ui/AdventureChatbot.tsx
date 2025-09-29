@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { apiClient } from '@/lib/api';
+import '../modals/modal-center.css';
 
 interface Message {
   id: string;
@@ -147,18 +148,21 @@ What can I help you with today?`,
   };
 
   return (
-    <>
-      {/* Chatbot Toggle Button - Made more prominent */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        className="fixed bottom-6 right-6 z-[100]"
-        style={{ position: 'fixed' }}
+    <>  
+      {/* Chatbot Toggle Button - Always visible floating button */}
+      <div
+        className="fixed bottom-6 right-6 z-[9998]"
+        style={{ 
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9998
+        }}
       >
         <Button
           onClick={onToggle}
           size="lg"
-          className="h-16 w-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 relative"
+          className="chatbot-toggle h-16 w-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 relative"
         >
           {/* Pulse animation when closed */}
           {!isOpen && (
@@ -220,7 +224,7 @@ What can I help you with today?`,
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-l-white"></div>
           </motion.div>
         )}
-      </motion.div>
+      </div>
 
       {/* Chatbot Window */}
       <AnimatePresence>
@@ -230,12 +234,14 @@ What can I help you with today?`,
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-96 h-[500px] z-[99] max-w-[calc(100vw-1.5rem)] sm:max-w-96"
+            className="fixed bottom-24 right-6 w-96 h-[500px] z-[9997] max-w-[calc(100vw-1.5rem)] sm:max-w-96"
             style={{ 
               position: 'fixed',
               width: 'min(384px, calc(100vw - 1.5rem))',
               height: 'min(500px, calc(100vh - 7rem))',
-              right: 'clamp(0.75rem, 1.5rem, calc((100vw - min(384px, calc(100vw - 1.5rem))) / 2))'
+              right: '1.5rem',
+              bottom: '6rem',
+              zIndex: 9997
             }}
           >
             <Card className="h-full flex flex-col shadow-2xl border-2 border-orange-200">
