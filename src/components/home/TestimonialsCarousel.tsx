@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
+import { apiClient } from '@/lib/api';
 
 interface Testimonial {
   id: string;
@@ -16,45 +17,77 @@ interface Testimonial {
 export function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const testimonials: Testimonial[] = [
-    {
-      id: '1',
-      name: "Sarah Johnson",
-      location: "Mumbai",
-      text: "The Ladakh trip was absolutely incredible! Every detail was perfectly planned. The guides were knowledgeable and the accommodations were amazing.",
-      rating: 5,
-      avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
-      trip: "Ladakh Adventure"
-    },
-    {
-      id: '2',
-      name: "Raj Patel",
-      location: "Delhi",
-      text: "Professional guides, amazing experiences, and great value for money. This was my third trip with Adventure Buddha and it won't be my last!",
-      rating: 5,
-      avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
-      trip: "Goa Beach Retreat"
-    },
-    {
-      id: '3',
-      name: "Emily Chen",
-      location: "Bangalore",
-      text: "Solo female traveler here - felt completely safe and had the time of my life! The group was welcoming and the itinerary was perfect.",
-      rating: 5,
-      avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
-      trip: "Kerala Backwaters"
-    },
-    {
-      id: '4',
-      name: "Michael Torres",
-      location: "Hyderabad",
-      text: "The best travel experience I've ever had. Will definitely book with Adventure Buddha again! The attention to detail was impressive.",
-      rating: 5,
-      avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg",
-      trip: "Himachal Trekking"
-    }
-  ];
+  // Generate testimonials from API trips
+  useEffect(() => {
+    const generateTestimonials = async () => {
+      try {
+        const trips = await apiClient.getTrips({ featured: 'popular,both' });
+        
+        // Mock testimonial data based on real trips
+        const mockTestimonials: Testimonial[] = [
+          {
+            id: '1',
+            name: "Sarah Johnson",
+            location: "Mumbai",
+            text: trips[0] ? `The ${trips[0].title} was absolutely incredible! Every detail was perfectly planned. The guides were knowledgeable and the accommodations were amazing.` : "The trip was absolutely incredible! Every detail was perfectly planned.",
+            rating: 5,
+            avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
+            trip: trips[0]?.title || "Adventure Trip"
+          },
+          {
+            id: '2',
+            name: "Raj Patel",
+            location: "Delhi",
+            text: trips[1] ? `Professional guides, amazing experiences, and great value for money. This was my third trip with Adventure Buddha and it won't be my last! The ${trips[1].title} exceeded all expectations.` : "Professional guides, amazing experiences, and great value for money.",
+            rating: 5,
+            avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
+            trip: trips[1]?.title || "Cultural Trip"
+          },
+          {
+            id: '3',
+            name: "Emily Chen",
+            location: "Bangalore",
+            text: trips[2] ? `Solo female traveler here - felt completely safe and had the time of my life! The group was welcoming and the itinerary was perfect for the ${trips[2].title}.` : "Solo female traveler here - felt completely safe and had the time of my life!",
+            rating: 5,
+            avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
+            trip: trips[2]?.title || "Nature Trip"
+          },
+          {
+            id: '4',
+            name: "Michael Torres",
+            location: "Hyderabad",
+            text: trips[3] ? `The best travel experience I've ever had. Will definitely book with Adventure Buddha again! The attention to detail was impressive on the ${trips[3].title}.` : "The best travel experience I've ever had. Will definitely book again!",
+            rating: 5,
+            avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg",
+            trip: trips[3]?.title || "Adventure Trip"
+          }
+        ];
+        
+        setTestimonials(mockTestimonials);
+      } catch (error) {
+        console.error('Failed to fetch trips for testimonials:', error);
+        // Fallback testimonials
+        setTestimonials([
+          {
+            id: '1',
+            name: "Sarah Johnson",
+            location: "Mumbai",
+            text: "The trip was absolutely incredible! Every detail was perfectly planned. The guides were knowledgeable and the accommodations were amazing.",
+            rating: 5,
+            avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
+            trip: "Adventure Trip"
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    generateTestimonials();
+  }, []);
 
   const nextTestimonial = useCallback(() => {
     setDirection(1);
@@ -70,11 +103,13 @@ export function TestimonialsCarousel() {
 
   // Auto-rotate testimonials
   useEffect(() => {
-    const interval = setInterval(() => {
-      nextTestimonial();
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [nextTestimonial]);
+    if (testimonials.length > 0) {
+      const interval = setInterval(() => {
+        nextTestimonial();
+      }, 6000);
+      return () => clearInterval(interval);
+    }
+  }, [nextTestimonial, testimonials.length]);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -91,63 +126,74 @@ export function TestimonialsCarousel() {
         <div className="relative max-w-4xl mx-auto">
           {/* Testimonials Carousel */}
           <div className="relative h-80 overflow-hidden rounded-2xl">
-            <AnimatePresence initial={false} custom={direction}>
-              <motion.div
-                key={currentIndex}
-                custom={direction}
-                variants={{
-                  enter: (direction: number) => ({
-                    x: direction > 0 ? 1000 : -1000,
-                    opacity: 0
-                  }),
-                  center: {
-                    zIndex: 1,
-                    x: 0,
-                    opacity: 1
-                  },
-                  exit: (direction: number) => ({
-                    zIndex: 0,
-                    x: direction < 0 ? 1000 : -1000,
-                    opacity: 0
-                  })
-                }}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
-                }}
-                className="absolute inset-0 bg-white shadow-lg rounded-2xl p-8 flex flex-col"
-              >
-                <Quote className="h-12 w-12 text-primary mb-6" />
-                
-                <p className="text-xl text-gray-700 mb-8 flex-grow italic">
-                  "{testimonials[currentIndex].text}"
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <img 
-                      src={testimonials[currentIndex].avatar} 
-                      alt={testimonials[currentIndex].name}
-                      className="h-16 w-16 rounded-full mr-4"
-                    />
-                    <div>
-                      <div className="font-bold text-lg">{testimonials[currentIndex].name}</div>
-                      <div className="text-gray-600">{testimonials[currentIndex].location}</div>
-                      <div className="text-sm text-gray-500">{testimonials[currentIndex].trip}</div>
+            {loading ? (
+              <div className="absolute inset-0 bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mb-4"></div>
+                <p className="text-gray-600">Loading testimonials...</p>
+              </div>
+            ) : testimonials.length === 0 ? (
+              <div className="absolute inset-0 bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center justify-center">
+                <p className="text-gray-600">No testimonials available.</p>
+              </div>
+            ) : (
+              <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                  key={currentIndex}
+                  custom={direction}
+                  variants={{
+                    enter: (direction: number) => ({
+                      x: direction > 0 ? 1000 : -1000,
+                      opacity: 0
+                    }),
+                    center: {
+                      zIndex: 1,
+                      x: 0,
+                      opacity: 1
+                    },
+                    exit: (direction: number) => ({
+                      zIndex: 0,
+                      x: direction < 0 ? 1000 : -1000,
+                      opacity: 0
+                    })
+                  }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  className="absolute inset-0 bg-white shadow-lg rounded-2xl p-8 flex flex-col"
+                >
+                  <Quote className="h-12 w-12 text-primary mb-6" />
+                  
+                  <p className="text-xl text-gray-700 mb-8 flex-grow italic">
+                    "{testimonials[currentIndex].text}"
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <img 
+                        src={testimonials[currentIndex].avatar} 
+                        alt={testimonials[currentIndex].name}
+                        className="h-16 w-16 rounded-full mr-4"
+                      />
+                      <div>
+                        <div className="font-bold text-lg">{testimonials[currentIndex].name}</div>
+                        <div className="text-gray-600">{testimonials[currentIndex].location}</div>
+                        <div className="text-sm text-gray-500">{testimonials[currentIndex].trip}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      ))}
                     </div>
                   </div>
-                  
-                  <div className="flex">
-                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            )}
           </div>
 
           {/* Navigation Buttons */}

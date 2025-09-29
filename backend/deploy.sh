@@ -68,6 +68,7 @@ docker-compose exec -T backend python manage.py collectstatic --noinput --clear
 
 # Run additional setup tasks
 log "🔧 Running additional setup tasks..."
-docker-compose exec -T backend python manage.py populate_trips || warning "Data population failed"
+# docker-compose exec -T backend python manage.py populate_trips || warning "Data population failed"
+log "⚠️  Skipping trip population to preserve manual database changes"
 
 success "✅ Backend deployment completed successfully!"

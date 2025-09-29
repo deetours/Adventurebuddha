@@ -35,9 +35,9 @@ def create_udupi_trip():
             'original_price': 5714.00,
             'gst_percentage': 5.0,
             'duration': 3,
-            'tags': ['cultural', 'beach', 'adventure', 'yakshagana', 'temple', 'coastal', 'hulivesha'],
+            'tags': ['cultural', 'beach', 'adventure', 'yakshagana', 'temple', 'coastal', 'hulivesha', 'karnataka'],
             'category': 'cultural',
-            'featured_status': 'both',  # Both featured and popular
+            'featured_status': 'featured',  # Featured only
             'difficulty': 'easy',
             'inclusions': [
                 'Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐',
@@ -150,7 +150,7 @@ def create_udupi_trip():
     
     if not created:
         # Update existing trip
-        trip.tags = ['cultural', 'beach', 'adventure', 'yakshagana', 'temple', 'coastal', 'hulivesha']
+        trip.tags = ['cultural', 'beach', 'adventure', 'yakshagana', 'temple', 'coastal', 'hulivesha', 'karnataka']
         trip.save()
         print("Updated existing trip: Udupi Coastal Escape")
     else:
@@ -181,9 +181,9 @@ def create_uttara_kannada_trip():
         original_price=5714.00,
         gst_percentage=5.0,
         duration=3,
-        tags=['cultural', 'tribal', 'forest', 'traditional', 'siddi', 'foraging', 'hulivesha'],
+        tags=['cultural', 'tribal', 'forest', 'traditional', 'siddi', 'foraging', 'hulivesha', 'karnataka'],
         category='cultural',
-        featured_status='both',  # Both featured and popular
+        featured_status='featured',  # Featured only
         difficulty='easy',
         inclusions=[
             'Travel from Bangalore to Hubli (train/tempo traveller/minibus – depending on group size) and local transfers to the tribal stay 🚐',
@@ -326,9 +326,9 @@ def create_gudibande_adiyogi_trip():
         original_price=1200.00,
         gst_percentage=5.0,
         duration=1,
-        tags=['cultural', 'spiritual', 'fort', 'temple', 'light-show', 'isha', 'adiyogi', 'mountain', 'trekking'],
+        tags=['cultural', 'spiritual', 'fort', 'temple', 'light-show', 'isha', 'adiyogi', 'mountain', 'trekking', 'karnataka'],
         category='cultural',
-        featured_status='both',  # Both featured and popular
+        featured_status='featured',  # Featured only
         difficulty='easy',
         inclusions=[
             'Travel from Bangalore to Chikkaballapur in a sit-in coach bus',
@@ -440,9 +440,9 @@ def create_udupi_coastal_escape_updated_trip():
         original_price=5714.00,
         gst_percentage=5.0,
         duration=3,
-        tags=['cultural', 'beach', 'adventure', 'huli-vesha', 'temple', 'coastal', 'dasara', 'tiger-dance', 'hulivesha'],
+        tags=['cultural', 'beach', 'adventure', 'huli-vesha', 'temple', 'coastal', 'dasara', 'tiger-dance', 'hulivesha', 'karnataka'],
         category='cultural',
-        featured_status='both',  # Both featured and popular
+        featured_status='popular',  # Popular only
         difficulty='easy',
         inclusions=[
             'Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)',
@@ -582,9 +582,9 @@ def create_pondicherry_coastal_trip():
         original_price=7999.00,
         gst_percentage=5.0,
         duration=5,
-        tags=['cultural', 'beach', 'spiritual', 'mangroves', 'french-colonial', 'auroville', 'pichavaram', 'coastal', 'hulivesha'],
+        tags=['cultural', 'beach', 'spiritual', 'mangroves', 'french-colonial', 'auroville', 'pichavaram', 'coastal', 'hulivesha', 'puducherry'],
         category='cultural',
-        featured_status='both',  # Both featured and popular
+        featured_status='popular',  # Popular only
         difficulty='easy',
         inclusions=[
             'Travel to & from Bangalore to Pondicherry in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)',
@@ -747,9 +747,9 @@ def create_coorg_chikmagalur_extended_trip():
         original_price=9999.00,
         gst_percentage=5.0,
         duration=5,
-        tags=['adventure', 'mountains', 'coffee-plantations', 'waterfalls', 'jeep-safari', 'coorg', 'chikmagalur', 'elephant-camp', 'cultural', 'hulivesha'],
+        tags=['adventure', 'mountains', 'coffee-plantations', 'waterfalls', 'jeep-safari', 'coorg', 'chikmagalur', 'elephant-camp', 'cultural', 'hulivesha', 'karnataka'],
         category='adventure',
-        featured_status='both',  # Both featured and popular
+        featured_status='popular',  # Popular only
         difficulty='moderate',
         inclusions=[
             'Travel to & from Bangalore to Coorg-Chikmagalur in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)',
@@ -913,9 +913,9 @@ def create_udupi_mangalore_agumbe_coastal_escape_trip():
         original_price=8999.00,
         gst_percentage=5.0,
         duration=4,
-        tags=['cultural', 'beach', 'adventure', 'huli-vesha', 'temple', 'coastal', 'dasara', 'tiger-dance', 'mangalore', 'agumbe', 'rainforest', 'hulivesha'],
+        tags=['cultural', 'beach', 'adventure', 'huli-vesha', 'temple', 'coastal', 'dasara', 'tiger-dance', 'mangalore', 'agumbe', 'rainforest', 'hulivesha', 'karnataka'],
         category='cultural',
-        featured_status='both',  # Both featured and popular
+        featured_status='popular',  # Popular only
         difficulty='easy',
         inclusions=[
             'Travel from Bangalore to Udupi homestay in Non AC Tempo Traveller / Minibus 🚐 (depending on the group size)',
@@ -1070,7 +1070,7 @@ def create_hampi_weekend_getaway_trip():
         original_price=4761.00,
         gst_percentage=5.0,
         duration=3,
-        tags=['cultural', 'heritage', 'adventure', 'hampi', 'temples', 'boulders', 'sunset', 'cliff-jumping', 'coracle', 'hippie', 'vijayanagara', 'hulivesha'],
+        tags=['cultural', 'heritage', 'adventure', 'hampi', 'temples', 'boulders', 'sunset', 'cliff-jumping', 'coracle', 'hippie', 'vijayanagara', 'hulivesha', 'karnataka'],
         category='cultural',
         featured_status='both',  # Both featured and popular
         difficulty='moderate',
@@ -1185,87 +1185,18 @@ def create_hampi_weekend_getaway_trip():
 
 def create_sample_trips():
     """Create additional sample trips for testing"""
+    # No additional sample trips needed
+    pass
 
-    # Sample trip 2 - Featured only
-    if not Trip.objects.filter(slug='kashmir-valley-adventure').exists():
-        trip2 = Trip.objects.create(
-            slug='kashmir-valley-adventure',
-            title='Kashmir Valley Adventure',
-            subtitle='Paradise on Earth',
-            description='Experience the breathtaking beauty of Kashmir with houseboat stays, shikara rides, and mountain treks.',
-            images=['/images/kashmir-1.jpg', '/images/kashmir-2.jpg'],
-            price=15999.00,
-            duration=7,
-            tags=['adventure', 'mountains', 'houseboat', 'kashmir', 'cultural', 'hulivesha'],
-            category='adventure',
-            featured_status='featured',
-            difficulty='moderate',
-            inclusions=['Accommodation', 'Meals', 'Local transport', 'Guide'],
-            exclusions=['Flights', 'Personal expenses', 'Insurance'],
-            things_to_carry=['Warm clothes', 'Hiking shoes', 'ID proof'],
-            itinerary=[
-                {'day': 1, 'title': 'Arrival in Srinagar', 'description': 'Welcome to Kashmir'},
-                {'day': 2, 'title': 'Houseboat Stay', 'description': 'Relax on Dal Lake'},
-                {'day': 3, 'title': 'Mountain Trek', 'description': 'Explore the valleys'}
-            ],
-            status='published'
-        )
-        print(f"Created trip: {trip2.title}")
-
-    # Sample trip 3 - Popular only
-    if not Trip.objects.filter(slug='goa-beach-retreat').exists():
-        trip3 = Trip.objects.create(
-            slug='goa-beach-retreat',
-            title='Goa Beach Retreat',
-            subtitle='Sun, Sand & Serenity',
-            description='Relax on Goa\'s pristine beaches with yoga sessions and beach activities.',
-            images=['/images/goa-1.jpg', '/images/goa-2.jpg'],
-            price=8999.00,
-            duration=5,
-            tags=['beach', 'relaxation', 'yoga', 'goa', 'cultural', 'hulivesha'],
-            category='beach',
-            featured_status='popular',
-            difficulty='easy',
-            inclusions=['Beach resort stay', 'Yoga sessions', 'Meals', 'Local transport'],
-            exclusions=['Flights', 'Personal expenses', 'Spa treatments'],
-            things_to_carry=['Swimwear', 'Sunscreen', 'Light clothes'],
-            itinerary=[
-                {'day': 1, 'title': 'Arrival & Beach Welcome', 'description': 'Settle into paradise'},
-                {'day': 2, 'title': 'Yoga & Meditation', 'description': 'Find inner peace'},
-                {'day': 3, 'title': 'Beach Activities', 'description': 'Water sports and relaxation'}
-            ],
-            status='published'
-        )
-        print(f"Created trip: {trip3.title}")
-
-    # Sample trip 4 - Both featured and popular
-    if not Trip.objects.filter(slug='rajasthan-cultural-tour').exists():
-        trip4 = Trip.objects.create(
-            slug='rajasthan-cultural-tour',
-            title='Rajasthan Cultural Heritage Tour',
-            subtitle='Royal Palaces & Desert Adventures',
-            description='Explore Rajasthan\'s royal heritage with palace visits, desert safaris, and cultural performances.',
-            images=['/images/rajasthan-1.jpg', '/images/rajasthan-2.jpg'],
-            price=12999.00,
-            duration=8,
-            tags=['cultural', 'heritage', 'desert', 'palaces', 'rajasthan', 'hulivesha'],
-            category='cultural',
-            featured_status='both',
-            difficulty='moderate',
-            inclusions=['Heritage hotels', 'Cultural performances', 'Desert safari', 'Meals', 'Guide'],
-            exclusions=['Flights', 'Personal expenses', 'Camera fees'],
-            things_to_carry=['Comfortable clothes', 'Walking shoes', 'Scarf for desert'],
-            itinerary=[
-                {'day': 1, 'title': 'Jaipur Arrival', 'description': 'Welcome to the Pink City'},
-                {'day': 2, 'title': 'Palace Tours', 'description': 'Explore royal heritage'},
-                {'day': 3, 'title': 'Desert Safari', 'description': 'Experience the Thar Desert'}
-            ],
-            status='published'
-        )
-        print(f"Created trip: {trip4.title}")
+def create_rajasthan_trip():
+    """Create the Rajasthan Cultural Heritage Tour trip"""
+    # This trip has been removed as requested
+    pass
 
 if __name__ == '__main__':
-    print("Creating trips...")
+    print("Deleting existing trips...")
+    Trip.objects.all().delete()
+    print("Creating selected trips...")
     create_udupi_trip()
     create_uttara_kannada_trip()
     create_gudibande_adiyogi_trip()
@@ -1274,5 +1205,5 @@ if __name__ == '__main__':
     create_coorg_chikmagalur_extended_trip()
     create_udupi_mangalore_agumbe_coastal_escape_trip()
     create_hampi_weekend_getaway_trip()
-    create_sample_trips()
-    print("All trips created successfully!")
+    # create_rajasthan_trip() - Removed as requested
+    print("All selected trips created successfully!")

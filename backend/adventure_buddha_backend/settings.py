@@ -50,15 +50,15 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'corsheaders',
-    'channels',
+    # 'channels',  # Temporarily disabled
     'trips',
-    'bookings',
-    'payments',
-    'agents',
-    'dashboard',
-    'messaging',
-    'ai_agent',
-    'leads',
+    # 'bookings',  # Temporarily disabled
+    # 'payments',  # Temporarily disabled
+    # 'agents',  # Temporarily disabled
+    # 'dashboard',  # Temporarily disabled
+    # 'messaging',  # Temporarily disabled
+    # 'ai_agent',  # Temporarily disabled
+    # 'leads',  # Temporarily disabled
 ]
 
 MIDDLEWARE = [
@@ -151,6 +151,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

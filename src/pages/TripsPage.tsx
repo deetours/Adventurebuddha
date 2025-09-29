@@ -31,6 +31,15 @@ export default function TripsPage() {
     queryFn: () => apiClient.getTrips(filters as Partial<FiltersState>),
   });
 
+  // Safe array handling for trips data
+  const safeTrips = useMemo(() => {
+    if (!Array.isArray(trips)) {
+      console.warn('Trips data is not an array:', trips);
+      return [];
+    }
+    return trips;
+  }, [trips]);
+
   // Update URL params when filters change
   const handleFiltersChange = (newFilters: FiltersState) => {
     setFilters(newFilters);
@@ -45,31 +54,49 @@ export default function TripsPage() {
     setSearchParams(params);
   };
 
-  // Create dynamic destinations from trips data
+  // Create featured and popular trips
+  const featuredTrips = useMemo(() => {
+    return safeTrips.filter(trip => trip.featured_status === 'featured' || trip.featured_status === 'both');
+  }, [safeTrips]);
+
+  const popularTrips = useMemo(() => {
+    return safeTrips.filter(trip => trip.featured_status === 'popular' || trip.featured_status === 'both');
+  }, [safeTrips]);
   const destinations = useMemo(() => {
     const locationMap: { [key: string]: { count: number; trips: Trip[] } } = {};
     
-    // Group trips by location extracted from tags
-    trips.forEach(trip => {
-      // Extract location from tags (look for known location tags)
+    // Group trips by location extracted from tags and titles
+    safeTrips.forEach(trip => {
+      // Extract location from your actual trip tags
       const locationTags = trip.tags.filter((tag: string) => 
-        ['kashmir', 'goa', 'rajasthan', 'kerala', 'ladakh', 'himachal', 'uttarakhand', 'sikkim', 'meghalaya', 'arunachal', 'karnataka', 'maharashtra', 'gujarat', 'punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar', 'jharkhand', 'west bengal', 'odisha', 'chhattisgarh', 'madhya pradesh', 'andhra pradesh', 'telangana', 'tamil nadu', 'kerala', 'puducherry', 'lakshadweep', 'andaman', 'nicobar'].includes(tag.toLowerCase())
+        ['hampi', 'coorg', 'chikmagalur', 'udupi', 'uttara-kannada', 'gudibande', 'mangalore', 'agumbe', 'pondicherry', 'auroville', 'pichavaram'].includes(tag.toLowerCase())
       );
       
       // If no specific location tag found, try to extract from title
       let location = locationTags.length > 0 ? locationTags[0] : null;
       if (!location) {
-        const titleWords = trip.title.toLowerCase().split(' ');
+        const titleWords = trip.title.toLowerCase().split(/[\s,–-]+/);
         for (const word of titleWords) {
-          if (['kashmir', 'goa', 'rajasthan', 'kerala', 'ladakh', 'himachal', 'uttarakhand', 'sikkim', 'meghalaya', 'arunachal', 'karnataka', 'maharashtra', 'gujarat', 'punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar', 'jharkhand', 'west bengal', 'odisha', 'chhattisgarh', 'madhya pradesh', 'andhra pradesh', 'telangana', 'tamil nadu', 'kerala', 'puducherry', 'lakshadweep', 'andaman', 'nicobar'].includes(word)) {
+          if (['hampi', 'coorg', 'chikmagalur', 'udupi', 'uttara', 'kannada', 'gudibande', 'mangalore', 'agumbe', 'pondicherry', 'auroville', 'pichavaram'].includes(word)) {
             location = word;
             break;
           }
         }
       }
       
-      // Default to 'India' if no location found
-      location = location || 'india';
+      // Try to extract from broader category
+      if (!location) {
+        if (trip.tags.some(tag => ['coastal', 'beach'].includes(tag.toLowerCase()))) {
+          location = 'coastal';
+        } else if (trip.tags.some(tag => ['cultural', 'heritage'].includes(tag.toLowerCase()))) {
+          location = 'cultural';
+        } else if (trip.tags.some(tag => ['adventure', 'trekking'].includes(tag.toLowerCase()))) {
+          location = 'adventure';
+        }
+      }
+      
+      // Default to 'Karnataka' since most of your trips are in Karnataka
+      location = location || 'karnataka';
       
       if (!locationMap[location]) {
         locationMap[location] = { count: 0, trips: [] };
@@ -78,38 +105,24 @@ export default function TripsPage() {
       locationMap[location].trips.push(trip);
     });
     
-    // Location to coordinates mapping
+    // Location to coordinates mapping for your actual destinations
     const coordinatesMap: { [key: string]: [number, number] } = {
-      'kashmir': [74.8, 34.1],
-      'goa': [74.1, 15.3],
-      'rajasthan': [74.2, 27.0],
-      'kerala': [76.3, 10.0],
-      'ladakh': [77.6, 34.2],
-      'himachal': [77.2, 31.1],
-      'uttarakhand': [79.0, 30.0],
-      'sikkim': [88.5, 27.3],
-      'meghalaya': [91.3, 25.6],
-      'arunachal': [94.7, 28.2],
+      'hampi': [76.5, 15.3],
+      'coorg': [75.8, 12.3],
+      'chikmagalur': [75.8, 13.3],
+      'udupi': [74.7, 13.3],
+      'uttara': [74.7, 14.9],
+      'kannada': [74.7, 14.9],
+      'gudibande': [77.4, 13.7],
+      'mangalore': [74.8, 12.9],
+      'agumbe': [75.1, 13.5],
+      'pondicherry': [79.8, 11.9],
+      'auroville': [79.8, 11.9],
+      'pichavaram': [79.8, 11.4],
       'karnataka': [75.7, 15.3],
-      'maharashtra': [75.7, 19.8],
-      'gujarat': [71.2, 22.3],
-      'punjab': [75.3, 31.1],
-      'haryana': [76.1, 29.1],
-      'delhi': [77.1, 28.7],
-      'uttar pradesh': [80.9, 27.0],
-      'bihar': [85.3, 25.1],
-      'jharkhand': [85.3, 23.6],
-      'west bengal': [87.9, 22.6],
-      'odisha': [84.4, 20.3],
-      'chhattisgarh': [81.9, 21.3],
-      'madhya pradesh': [78.7, 23.3],
-      'andhra pradesh': [79.7, 15.9],
-      'telangana': [79.0, 18.1],
-      'tamil nadu': [78.7, 11.1],
-      'puducherry': [79.8, 11.9],
-      'lakshadweep': [72.6, 10.6],
-      'andaman': [92.7, 11.7],
-      'nicobar': [93.9, 7.9],
+      'coastal': [74.8, 13.0],
+      'cultural': [76.0, 15.0],
+      'adventure': [75.5, 13.5],
       'india': [78.9, 20.6] // Center of India
     };
     
@@ -123,12 +136,11 @@ export default function TripsPage() {
       description: getDescriptionForLocation(location, data.count),
       image: getImageForLocation(location)
     }));
-  }, [trips]);
+  }, [safeTrips]);
   
   // Helper functions
   function getRegionFromLocation(location: string): string {
     const regionMap: { [key: string]: string } = {
-      'kashmir': 'Northern India',
       'ladakh': 'Northern India',
       'himachal': 'Northern India',
       'uttarakhand': 'Northern India',
@@ -143,9 +155,7 @@ export default function TripsPage() {
       'sikkim': 'Northeastern India',
       'meghalaya': 'Northeastern India',
       'arunachal': 'Northeastern India',
-      'rajasthan': 'Western India',
       'gujarat': 'Western India',
-      'goa': 'Western India',
       'maharashtra': 'Western India',
       'madhya pradesh': 'Central India',
       'chhattisgarh': 'Central India',
@@ -157,16 +167,24 @@ export default function TripsPage() {
       'puducherry': 'Southern India',
       'lakshadweep': 'Island Territories',
       'andaman': 'Island Territories',
-      'nicobar': 'Island Territories'
+      'nicobar': 'Island Territories',
+      'hampi': 'Southern India',
+      'coorg': 'Southern India',
+      'chikmagalur': 'Southern India',
+      'udupi': 'Southern India',
+      'uttara-kannada': 'Southern India',
+      'gudibande': 'Southern India',
+      'mangalore': 'Southern India',
+      'agumbe': 'Southern India',
+      'pondicherry': 'Southern India',
+      'auroville': 'Southern India',
+      'pichavaram': 'Southern India'
     };
     return regionMap[location] || 'India';
   }
   
   function getDescriptionForLocation(location: string, _tripCount: number): string { // eslint-disable-line @typescript-eslint/no-unused-vars
     const descriptions: { [key: string]: string } = {
-      'kashmir': 'Paradise on earth with stunning valleys and lakes',
-      'goa': 'Beaches and vibrant culture with Portuguese heritage',
-      'rajasthan': 'Land of kings with rich cultural heritage and palaces',
       'kerala': 'God\'s own country with backwaters and spice gardens',
       'ladakh': 'High altitude desert with monasteries and mountains',
       'himachal': 'Hill stations and adventure sports paradise',
@@ -193,30 +211,48 @@ export default function TripsPage() {
       'puducherry': 'French colonial charm with spiritual centers',
       'lakshadweep': 'Coral paradise with pristine beaches',
       'andaman': 'Tropical islands with cellular jail history',
-      'nicobar': 'Remote islands with indigenous tribes'
+      'nicobar': 'Remote islands with indigenous tribes',
+      'hampi': 'Ancient Vijayanagara ruins and boulder landscapes',
+      'coorg': 'Coffee plantations and misty hills',
+      'chikmagalur': 'Gateway to Mullayanagiri and coffee estates',
+      'udupi': 'Coastal temples and Yakshagana traditions',
+      'uttara-kannada': 'Tribal communities and forest adventures',
+      'gudibande': '17th-century fort and Adiyogi temple',
+      'mangalore': 'Coastal city with Tulu culture',
+      'agumbe': 'Rainforest and sunset viewpoints',
+      'pondicherry': 'French colonial charm with spiritual centers',
+      'auroville': 'Experimental community with sustainable living',
+      'pichavaram': 'Mangrove forests and backwaters'
     };
     return descriptions[location] || `Explore amazing destinations in ${location.charAt(0).toUpperCase() + location.slice(1)}`;
   }
   
   function getImageForLocation(location: string): string {
     const imageMap: { [key: string]: string } = {
-      'kashmir': '/images/destinations/kashmir.jpg',
-      'goa': '/images/destinations/goa.jpg',
-      'rajasthan': '/images/destinations/rajasthan.jpg',
       'kerala': '/images/destinations/kerala.jpg',
       'ladakh': '/images/destinations/ladakh.jpg',
       'himachal': '/images/destinations/himachal.jpg',
       'uttarakhand': '/images/destinations/uttarakhand.jpg',
       'sikkim': '/images/destinations/sikkim.jpg',
       'meghalaya': '/images/destinations/meghalaya.jpg',
-      'arunachal': '/images/destinations/arunachal.jpg'
+      'arunachal': '/images/destinations/arunachal.jpg',
+      'karnataka': '/images/destinations/karnataka.jpg',
+      'hampi': '/images/destinations/hampi.jpg',
+      'coorg': '/images/destinations/coorg.jpg',
+      'chikmagalur': '/images/destinations/chikmagalur.jpg',
+      'udupi': '/images/destinations/udupi.jpg',
+      'mangalore': '/images/destinations/mangalore.jpg',
+      'agumbe': '/images/destinations/agumbe.jpg',
+      'pondicherry': '/images/destinations/pondicherry.jpg',
+      'auroville': '/images/destinations/auroville.jpg',
+      'pichavaram': '/images/destinations/pichavaram.jpg'
     };
     return imageMap[location] || '/images/destinations/default.jpg';
   }
 
   // Filter and paginate trips
   const filteredTrips = useMemo(() => {
-    let result = trips;
+    let result = safeTrips;
 
     // Apply client-side filters (in case backend doesn't handle all)
     if (filters.search) {
@@ -241,7 +277,7 @@ export default function TripsPage() {
     }
 
     return result;
-  }, [trips, filters]);
+  }, [safeTrips, filters]);
 
   // Paginate results
   const paginatedTrips = useMemo(() => {

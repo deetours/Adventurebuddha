@@ -99,124 +99,13 @@ export interface TravelInsight {
   trend: 'up' | 'down' | 'neutral';
 }
 
-// Mock data for development
-const mockTrips: Trip[] = [
-  {
-    id: '1',
-    slug: 'ladakh-adventure',
-    title: 'Ladakh Adventure - 7 Days',
-    description: 'Experience the magical landscapes of Ladakh with this incredible 7-day adventure.',
-    images: [
-      'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-      'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-      'https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg',
-    ],
-    price: 35000,
-    duration: 7,
-    tags: ['trek', 'adventure', 'mountains'],
-    difficulty: 'challenging',
-    rating: 4.8,
-    reviewCount: 124,
-    inclusions: ['Transportation', 'Accommodation', 'Meals', 'Guide'],
-    exclusions: ['Personal expenses', 'Insurance', 'Tips'],
-    itinerary: [
-      {
-        day: 1,
-        title: 'Arrival in Leh',
-        description: 'Arrive in Leh, acclimatization day',
-        activities: ['Airport pickup', 'Hotel check-in', 'Rest'],
-        meals: ['Dinner'],
-        accommodation: 'Hotel in Leh'
-      },
-      {
-        day: 2,
-        title: 'Leh Local Sightseeing',
-        description: 'Explore the beautiful monasteries and palaces',
-        activities: ['Leh Palace', 'Shanti Stupa', 'Local market'],
-        meals: ['Breakfast', 'Lunch', 'Dinner'],
-        accommodation: 'Hotel in Leh'
-      }
-    ],
-    upcomingSlots: [
-      {
-        id: 'slot-1',
-        tripId: '1',
-        date: '2024-06-15',
-        time: '06:00',
-        vehicleType: 'Tempo Traveller',
-        totalSeats: 12,
-        availableSeats: 8,
-        price: 35000,
-        status: 'available'
-      }
-    ]
-  },
-  {
-    id: '2',
-    slug: 'goa-beach-retreat',
-    title: 'Goa Beach Retreat - 5 Days',
-    description: 'Relax and unwind at the beautiful beaches of Goa.',
-    images: [
-      'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-      'https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg',
-    ],
-    price: 18000,
-    duration: 5,
-    tags: ['relax', 'beach', 'family'],
-    difficulty: 'easy',
-    rating: 4.6,
-    reviewCount: 89,
-    inclusions: ['Accommodation', 'Breakfast', 'Airport transfers'],
-    exclusions: ['Lunch & Dinner', 'Activities', 'Personal expenses'],
-    itinerary: [
-      {
-        day: 1,
-        title: 'Arrival in Goa',
-        description: 'Check-in and beach time',
-        activities: ['Airport pickup', 'Beach walk'],
-        meals: ['Welcome drink'],
-        accommodation: 'Beach resort'
-      }
-    ],
-    upcomingSlots: [
-      {
-        id: 'slot-2',
-        tripId: '2',
-        date: '2024-06-20',
-        time: '10:00',
-        vehicleType: 'AC Bus',
-        totalSeats: 45,
-        availableSeats: 12,
-        price: 18000,
-        status: 'filling_fast'
-      }
-    ]
-  }
-];
-
-const mockSeatMap: SeatMap = {
-  vehicle: 'Tempo Traveller',
-  rows: 4,
-  cols: 3,
-  seats: [
-    // Row 1 (Driver row)
-    { id: 'D1', row: 1, col: 1, type: 'driver' },
-    { id: 'A1', row: 1, col: 2, type: 'window' },
-    { id: 'A2', row: 1, col: 3, type: 'aisle' },
-    // Row 2
-    { id: 'B1', row: 2, col: 1, type: 'window' },
-    { id: 'B2', row: 2, col: 2, type: 'aisle' },
-    { id: 'B3', row: 2, col: 3, type: 'window' },
-    // Row 3
-    { id: 'C1', row: 3, col: 1, type: 'window' },
-    { id: 'C2', row: 3, col: 2, type: 'aisle' },
-    { id: 'C3', row: 3, col: 3, type: 'window' },
-    // Row 4
-    { id: 'D1', row: 4, col: 1, type: 'window' },
-    { id: 'D2', row: 4, col: 2, type: 'aisle' },
-    { id: 'D3', row: 4, col: 3, type: 'window' },
-  ]
-};
+// Paginated response interface
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
 class ApiClient {
   private baseUrl: string;
@@ -226,10 +115,6 @@ class ApiClient {
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    if (config.USE_MOCK_API) {
-      return this.mockRequest<T>(endpoint, options);
-    }
-
     const url = `${this.baseUrl}${endpoint}`;
     const response = await fetch(url, {
       headers: {
@@ -246,60 +131,6 @@ class ApiClient {
     return response.json();
   }
 
-  private async mockRequest<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 700));
-
-    const method = options?.method || 'GET';
-    const body = options?.body ? JSON.parse(options.body as string) : null;
-
-    // Mock API responses
-    if (endpoint.startsWith('/trips') && method === 'GET') {
-      if (endpoint.includes('/trips/')) {
-        const slug = endpoint.split('/trips/')[1].split('/')[0];
-        const trip = mockTrips.find(t => t.slug === slug || t.id === slug);
-        if (!trip) throw new Error('Trip not found');
-        return trip as T;
-      }
-      return mockTrips as T;
-    }
-
-    if (endpoint.includes('/seatmap') && method === 'GET') {
-      const seatStatus: SeatStatus = {
-        available: ['A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2'],
-        locked: ['C3'],
-        booked: ['D1', 'D2'],
-        blocked: ['D3'],
-        selected: []
-      };
-      return { seatMap: mockSeatMap, ...seatStatus } as T;
-    }
-
-    if (endpoint.includes('/seat-lock') && method === 'POST') {
-      return {
-        lock_token: 'mock_token_' + Date.now(),
-        expires_in: 300 // 5 minutes
-      } as T;
-    }
-
-    if (endpoint.includes('/bookings') && method === 'POST') {
-      return {
-        booking_id: 'booking_' + Date.now(),
-        status: 'pending_payment',
-        amount: 35000
-      } as T;
-    }
-
-    if (endpoint.includes('/payments/razorpay/create-order') && method === 'POST') {
-      return {
-        order_id: 'order_' + Date.now(),
-        amount: body.amount || 35000
-      } as T;
-    }
-
-    throw new Error(`Mock endpoint not implemented: ${method} ${endpoint}`);
-  }
-
   // Trip APIs
   async getTrips(filters?: Partial<FiltersState>): Promise<Trip[]> {
     const queryParams = new URLSearchParams();
@@ -307,11 +138,47 @@ class ApiClient {
     if (filters?.featured) queryParams.append('featured', filters.featured);
     
     const endpoint = `/trips?${queryParams.toString()}`;
-    return this.request<Trip[]>(endpoint);
+    const response = await this.request<PaginatedResponse<Trip> | Trip[]>(endpoint);
+    
+    let trips: Trip[] = [];
+    
+    // Handle paginated response - extract results array
+    if (response && typeof response === 'object' && 'results' in response) {
+      trips = response.results;
+    } else if (Array.isArray(response)) {
+      // Fallback for non-paginated response (array)
+      trips = response;
+    } else {
+      console.warn('Unexpected API response format for trips:', response);
+      return [];
+    }
+    
+    // Process images to convert relative URLs to absolute URLs
+    return trips.map(trip => ({
+      ...trip,
+      images: trip.images?.map((img: string) => 
+        img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
+      ) || []
+    }));
   }
 
   async getTrip(slugOrId: string): Promise<Trip> {
-    return this.request<Trip>(`/trips/${slugOrId}`);
+    const response = await this.request<Trip>(`/trips/${slugOrId}/`);
+    
+    // Process images to convert relative URLs to absolute URLs
+    return {
+      ...response,
+      images: response.images?.map((img: string) => 
+        img.startsWith('/') ? `http://68.233.115.38:8000${img}` : img
+      ) || []
+    };
+  }
+
+  async updateTrip(slug: string, tripData: Partial<Trip>): Promise<Trip> {
+    return this.request<Trip>(`/trips/${slug}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(tripData)
+    });
   }
 
   // Seat APIs
@@ -492,3 +359,6 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
+
+// Export as 'api' for backward compatibility
+export const api = apiClient;

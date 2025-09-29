@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
 import TripsPage from './pages/TripsPage';
 import TripDetailsPage from './pages/TripDetailsPage';
+import TripManagement from './pages/admin/TripManagement';
 import SeatSelectionPage from './pages/SeatSelectionPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -81,6 +82,7 @@ function App() {
                 <Route path="book/:bookingId/confirmation" element={<BookingConfirmationPage />} />
                 <Route path="support" element={<SupportPage />} />
                 <Route path="admin" element={<AdminPage />} />
+                <Route path="admin/trips/:slug" element={<TripManagement />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

@@ -152,7 +152,8 @@ What can I help you with today?`,
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-6 right-6 z-[100]"
+        style={{ position: 'fixed' }}
       >
         <Button
           onClick={onToggle}
@@ -212,7 +213,7 @@ What can I help you with today?`,
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="absolute right-20 top-1/2 transform -translate-y-1/2 bg-white rounded-lg px-3 py-2 shadow-lg border border-orange-200 hidden md:block"
+            className="absolute right-20 top-1/2 transform -translate-y-1/2 bg-white rounded-lg px-3 py-2 shadow-lg border border-orange-200 hidden lg:block"
           >
             <div className="text-sm font-medium text-gray-900">Need help? 💬</div>
             <div className="text-xs text-gray-500">Click to chat</div>
@@ -229,7 +230,13 @@ What can I help you with today?`,
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-96 h-[500px] z-50 max-w-[calc(100vw-3rem)]"
+            className="fixed bottom-24 right-6 w-96 h-[500px] z-[99] max-w-[calc(100vw-1.5rem)] sm:max-w-96"
+            style={{ 
+              position: 'fixed',
+              width: 'min(384px, calc(100vw - 1.5rem))',
+              height: 'min(500px, calc(100vh - 7rem))',
+              right: 'clamp(0.75rem, 1.5rem, calc((100vw - min(384px, calc(100vw - 1.5rem))) / 2))'
+            }}
           >
             <Card className="h-full flex flex-col shadow-2xl border-2 border-orange-200">
               {/* Header */}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Phone, User, Calendar, MapPin, Gift, Star, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -164,14 +164,43 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
     queryFn: () => apiClient.getTrips(),
   });
 
-  // Extract unique destinations from trips
-  const destinations = Array.from(new Set(
-    trips.flatMap(trip => 
-      trip.tags.filter(tag => 
-        ['kashmir', 'goa', 'rajasthan', 'kerala', 'ladakh', 'himachal', 'uttarakhand', 'sikkim', 'meghalaya', 'arunachal', 'karnataka', 'maharashtra', 'gujarat', 'punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar', 'jharkhand', 'west bengal', 'odisha', 'chhattisgarh', 'madhya pradesh', 'andhra pradesh', 'telangana', 'tamil nadu', 'puducherry', 'lakshadweep', 'andaman', 'nicobar'].includes(tag.toLowerCase())
-      )
-    )
-  )).map(dest => dest.charAt(0).toUpperCase() + dest.slice(1)).sort();
+  // Extract unique destinations from trips with safety check
+  const destinations = useMemo(() => {
+    if (!Array.isArray(trips)) {
+      console.warn('Trips data is not an array in LeadCaptureModal:', trips);
+      return [];
+    }
+    
+    // Extract destinations from trip titles and tags
+    const destinationSet = new Set<string>();
+    
+    trips.forEach(trip => {
+      // Extract key destinations from tags
+      const destinationTags = trip.tags.filter(tag => 
+        ['hampi', 'udupi', 'mangalore', 'agumbe', 'coorg', 'chikmagalur', 'pondicherry', 'auroville', 'pichavaram', 'gudibande', 'uttara kannada'].includes(tag.toLowerCase())
+      );
+      
+      destinationTags.forEach(tag => {
+        destinationSet.add(tag.charAt(0).toUpperCase() + tag.slice(1));
+      });
+      
+      // Also add broader categories based on actual trip content
+      if (trip.tags.some(tag => ['coastal', 'temple', 'beach'].includes(tag.toLowerCase()))) {
+        destinationSet.add('Karnataka Coast');
+      }
+      if (trip.tags.some(tag => ['forest', 'wildlife', 'nature'].includes(tag.toLowerCase()))) {
+        destinationSet.add('Nature & Wildlife');
+      }
+      if (trip.tags.some(tag => ['heritage', 'history', 'fort'].includes(tag.toLowerCase()))) {
+        destinationSet.add('Heritage Sites');
+      }
+      if (trip.tags.some(tag => ['trek', 'adventure', 'hills'].includes(tag.toLowerCase()))) {
+        destinationSet.add('Hill Stations & Treks');
+      }
+    });
+    
+    return Array.from(destinationSet).sort();
+  }, [trips]);
 
   const interests = [
     'Trekking', 'Photography', 'Cultural Tours', 'Adventure Sports',
@@ -194,7 +223,8 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           onClick={onClose}
           role="dialog"
           aria-modal="true"
@@ -209,7 +239,8 @@ export function LeadCaptureModal({ isOpen, onClose, onLeadCaptured }: LeadCaptur
             className="relative w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden sm:max-w-md md:max-w-lg"
             onClick={(e) => e.stopPropagation()}
             style={{
-              maxHeight: 'calc(100vh - 1rem)',
+              maxHeight: 'calc(100vh - 2rem)',
+              minHeight: 'min(500px, calc(100vh - 2rem))',
               display: 'flex',
               flexDirection: 'column'
             }}

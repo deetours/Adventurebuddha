@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, CheckCircle, Phone, MessageCircle, TrendingUp, MapPin, Users, Star } from 'lucide-react';
@@ -11,6 +11,7 @@ import { FeaturedDestinations } from '../components/home/FeaturedDestinations';
 import { NewsletterSignup } from '../components/home/NewsletterSignup';
 import { TestimonialsCarousel } from '../components/home/TestimonialsCarousel';
 import { LeadCaptureModal } from '../components/home/LeadCaptureModal';
+
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../lib/api';
 import { toast } from '../components/ui/use-toast';
@@ -61,24 +62,53 @@ export default function LandingPage() {
   const enableHeavyAnimations = fps >= 50;
   const enableBackgroundAnimations = fps >= 40;
 
-      // Auto-open lead modal after 5 seconds
+  // Auto-open lead modal after user engagement (scroll or time)
   useEffect(() => {
     const hasSeenModal = localStorage.getItem('leadModalShown');
     if (!hasSeenModal) {
+      let scrollTriggered = false;
+      
+      const handleScroll = () => {
+        if (window.scrollY > 800 && !scrollTriggered) { // After hero section
+          scrollTriggered = true;
+          setIsLeadModalOpen(true);
+          localStorage.setItem('leadModalShown', 'true');
+          window.removeEventListener('scroll', handleScroll);
+        }
+      };
+      
+      // Fallback timer - show after 15 seconds if user hasn't scrolled
       const timer = setTimeout(() => {
-        setIsLeadModalOpen(true);
-        localStorage.setItem('leadModalShown', 'true');
-      }, 5000); // 5 seconds
-
-      return () => clearTimeout(timer);
+        if (!scrollTriggered) {
+          setIsLeadModalOpen(true);
+          localStorage.setItem('leadModalShown', 'true');
+          window.removeEventListener('scroll', handleScroll);
+        }
+      }, 15000); // 15 seconds fallback
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('scroll', handleScroll);
+      };
     }
   }, []);
 
   // Fetch featured trips
   const { data: featuredTrips = [] } = useQuery({
     queryKey: ['featured-trips'],
-    queryFn: () => apiClient.getTrips({ featured: 'featured' }),
+    queryFn: () => apiClient.getTrips({ featured: 'featured,both' }),
   });
+
+  // Safe array handling for featured trips
+  const safeFeaturedTrips = useMemo(() => {
+    if (!Array.isArray(featuredTrips)) {
+      console.warn('Featured trips data is not an array:', featuredTrips);
+      return [];
+    }
+    return featuredTrips;
+  }, [featuredTrips]);
 
   const handleSearch = (query: string) => {
     // In a real app, this would trigger a search
@@ -113,6 +143,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen">
+
+
       {/* Hero Section */}
       <Hero />
 
@@ -170,7 +202,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredTrips.slice(0, 3).map((trip, index) => (
+            {safeFeaturedTrips.slice(0, 3).map((trip, index) => (
               <motion.div
                 key={trip.id}
                 initial={{ opacity: 0, y: 30 }}

@@ -14,17 +14,20 @@ A modern, production-ready travel booking web application built with React, Type
 - **Testing**: Comprehensive unit, integration, and E2E tests
 - **Storybook**: Component documentation and design system
 - **Chain Prompting**: AI-powered content enhancement with optimized token usage
+- **CI/CD**: Automated deployment with rollback capabilities
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18, TypeScript, Vite
+- **Backend**: Django, PostgreSQL, Redis, Docker
 - **Styling**: Tailwind CSS, shadcn/ui components
 - **State Management**: Zustand, TanStack Query
 - **Animations**: Framer Motion, react-three-fiber
 - **Forms**: React Hook Form, Zod validation
 - **Testing**: Vitest, React Testing Library, Cypress
 - **Documentation**: Storybook
-- **Deployment**: Docker, Nginx
+- **Deployment**: Docker, Nginx, GitHub Actions
+- **CI/CD**: Automated testing and deployment
 
 ## 🏃‍♂️ Quick Start
 
@@ -225,7 +228,46 @@ The chain prompting system consists of:
 
 For detailed implementation information, see [Chain Prompting Implementation Guide](README_CHAIN_PROMPTING.md)
 
-## 🐛 Known Issues & Limitations
+## � CI/CD Pipeline
+
+Adventure Buddha features a comprehensive CI/CD pipeline using GitHub Actions for automated testing and deployment.
+
+### Features
+- **Automated Testing**: Frontend and backend tests on every push
+- **Zero-Downtime Deployment**: Rolling updates with health checks
+- **Automatic Rollback**: Failed deployments automatically rollback
+- **Health Monitoring**: Continuous health checks post-deployment
+- **Multi-Environment**: Support for staging and production
+
+### Setup
+1. **VM Preparation**: Run the setup script on your Ubuntu server:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/deetours/Adventurebuddha/main/setup-ci-cd.sh | bash
+   ```
+
+2. **GitHub Secrets**: Add the following to your repository secrets:
+   - `VM_HOST`: Your server IP/domain
+   - `VM_USER`: SSH username (usually 'ubuntu')
+   - `VM_SSH_PRIVATE_KEY`: Private SSH key for deployment
+
+3. **Environment Files**: Configure `.env` files on your server
+
+### Deployment Flow
+```
+Push to main → Tests → Build → Deploy → Health Check → Success
+                    ↓ (if fail)
+               Automatic Rollback + Issue Creation
+```
+
+### Monitoring
+- **Health Checks**: Database, Redis, API endpoints
+- **Logs**: Automatic log rotation and archival
+- **Notifications**: Slack/Discord webhook support
+- **Metrics**: Deployment success/failure tracking
+
+For detailed CI/CD setup instructions, see [CI/CD Setup Guide](CI_CD_README.md)
+
+## �🐛 Known Issues & Limitations
 
 1. **WebSocket Reconnection**: Basic exponential backoff implemented
 2. **Offline Support**: Not implemented (future enhancement)

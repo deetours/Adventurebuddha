@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { ArrowRight, MapPin, Calendar, Users, X, DollarSign, CheckCircle } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+
+interface Destination {
+  id: string;
+  name: string;
+  country: string;
+  price: number;
+  image: string;
+  highlights: string[];
+  bestTime: string;
+  difficulty: string;
+}
 
 // Booking Form Component
 const BookingForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -15,49 +27,37 @@ const BookingForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [specialRequests, setSpecialRequests] = useState('');
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isBooking, setIsBooking] = useState(false);
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(true);
 
-  const destinations = [
-    { 
-      id: 'ladakh', 
-      name: 'Ladakh', 
-      country: 'India', 
-      price: 45000, 
-      image: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-      highlights: ['Pangong Lake', 'Magnetic Hill', 'Leh Palace'],
-      bestTime: 'Jun - Sep',
-      difficulty: 'Moderate'
-    },
-    {
-      id: 'goa',
-      name: 'Goa',
-      country: 'India',
-      price: 25000,
-      image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-      highlights: ['Calangute Beach', 'Old Goa Churches', 'Dudhsagar Falls'],
-      bestTime: 'Nov - May',
-      difficulty: 'Easy'
-    },
-    {
-      id: 'kerala',
-      name: 'Kerala',
-      country: 'India',
-      price: 35000,
-      image: 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-      highlights: ['Alleppey Backwaters', 'Munnar Tea Gardens', 'Periyar Wildlife'],
-      bestTime: 'Sep - Mar',
-      difficulty: 'Easy'
-    },
-    {
-      id: 'himachal',
-      name: 'Himachal Pradesh',
-      country: 'India',
-      price: 30000,
-      image: 'https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg',
-      highlights: ['Shimla Colonial', 'Manali Adventure', 'Kullu Valley'],
-      bestTime: 'Mar - Jun',
-      difficulty: 'Moderate'
-    }
-  ];
+  // Fetch destinations from API
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        const trips = await apiClient.getTrips({ featured: 'popular,both' });
+        // Convert trips to destination format
+        const destinationData: Destination[] = trips.slice(0, 6).map((trip) => ({
+          id: trip.id.toString(),
+          name: trip.title.split(' ').slice(0, 2).join(' '), // Use first 2 words as destination name
+          country: 'India',
+          price: trip.price,
+          image: trip.images?.[0] || '/images/default-trip.jpg',
+          highlights: trip.tags?.slice(0, 3) || ['Adventure', 'Culture', 'Nature'],
+          bestTime: 'Oct - Mar',
+          difficulty: trip.difficulty === 'easy' ? 'Easy' : trip.difficulty === 'moderate' ? 'Moderate' : 'Challenging'
+        }));
+        setDestinations(destinationData);
+      } catch (error) {
+        console.error('Failed to fetch destinations:', error);
+        // Fallback to empty array
+        setDestinations([]);
+      } finally {
+        setLoadingDestinations(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
 
   const validateStep = (step: string) => {
     const newErrors: {[key: string]: string} = {};
@@ -175,48 +175,65 @@ const BookingForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               )}
 
               <div className="grid grid-cols-2 gap-3">
-                {destinations.map((dest) => (
-                  <motion.div
-                    key={dest.id}
-                    className={`relative rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                      selectedDestination === dest.id ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'
-                    }`}
-                    onClick={() => {
-                      setSelectedDestination(dest.id);
-                      setErrors({ ...errors, destination: '' });
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <img src={dest.image} alt={dest.name} className="w-full h-20 object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    
-                    <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
-                      <div className="flex items-center justify-between mb-1">
-                        <h4 className="font-semibold text-sm">{dest.name}</h4>
-                        <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${
-                          dest.difficulty === 'Easy' ? 'bg-green-500' : 'bg-yellow-500'
-                        }`}>
-                          {dest.difficulty}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold">₹{dest.price.toLocaleString()}</span>
-                        <span className="text-xs opacity-75">{dest.bestTime}</span>
+                {loadingDestinations ? (
+                  // Loading skeleton
+                  Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="rounded-lg overflow-hidden border-2 border-gray-200">
+                      <div className="w-full h-20 bg-gray-200 animate-pulse" />
+                      <div className="p-2">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse mb-1" />
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
                       </div>
                     </div>
+                  ))
+                ) : destinations.length === 0 ? (
+                  <div className="col-span-2 text-center py-8">
+                    <p className="text-gray-500">No destinations available at the moment.</p>
+                  </div>
+                ) : (
+                  destinations.map((dest) => (
+                    <motion.div
+                      key={dest.id}
+                      className={`relative rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                        selectedDestination === dest.id ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'
+                      }`}
+                      onClick={() => {
+                        setSelectedDestination(dest.id);
+                        setErrors({ ...errors, destination: '' });
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <img src={dest.image} alt={dest.name} className="w-full h-20 object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-semibold text-sm">{dest.name}</h4>
+                          <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                            dest.difficulty === 'Easy' ? 'bg-green-500' : 'bg-yellow-500'
+                          }`}>
+                            {dest.difficulty}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold">₹{dest.price.toLocaleString()}</span>
+                          <span className="text-xs opacity-75">{dest.bestTime}</span>
+                        </div>
+                      </div>
 
-                    {selectedDestination === dest.id && (
-                      <motion.div
-                        className="absolute top-1 right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                      >
-                        <CheckCircle className="w-3 h-3 text-white" />
-                      </motion.div>
-                    )}
-                  </motion.div>
-                ))}
+                      {selectedDestination === dest.id && (
+                        <motion.div
+                          className="absolute top-1 right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                        >
+                          <CheckCircle className="w-3 h-3 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ))
+                )}
               </div>
 
               {selectedDestination && (
@@ -811,9 +828,9 @@ const MorphingCTAButtons: React.FC = () => {
         );
       })}
       
-      {/* Booking Modal - Instant appearance, no scrolling */}
+      {/* Booking Modal - Fixed positioning, mobile-friendly */}
       {showBookingModal && createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-2 px-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm">
           {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -825,22 +842,31 @@ const MorphingCTAButtons: React.FC = () => {
           
           {/* Modal Content */}
           <motion.div
-            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-hidden border-4 border-orange-300"
-            initial={{ opacity: 0, scale: 0.9, y: -50 }}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border-2 border-orange-200"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: -50 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            style={{ zIndex: 10001 }}
+            style={{ 
+              maxHeight: 'calc(100vh - 2rem)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={closeBookingModal}
-              className="absolute top-4 right-4 z-20 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
+              className="absolute top-3 right-3 z-20 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
+              aria-label="Close booking modal"
             >
               <X className="w-4 h-4 text-white" />
             </button>
             
-            <BookingForm onClose={closeBookingModal} />
+            {/* Scrollable Content Container */}
+            <div className="flex-1 overflow-y-auto">
+              <BookingForm onClose={closeBookingModal} />
+            </div>
           </motion.div>
         </div>,
         document.body

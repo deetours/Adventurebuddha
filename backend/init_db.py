@@ -78,47 +78,7 @@ def create_sample_data():
         
         print("Created sample trip: Ladakh Adventure")
         
-        # Sample trip 2
-        trip2 = Trip.objects.create(
-            slug='goa-beach-retreat',
-            title='Goa Beach Retreat - 5 Days',
-            description='Relax and unwind at the beautiful beaches of Goa.',
-            images=[
-                'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-                'https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg',
-            ],
-            price=18000,
-            duration=5,
-            tags=['relax', 'beach', 'family'],
-            difficulty='easy',
-            rating=4.6,
-            review_count=89,
-            inclusions=['Accommodation', 'Breakfast', 'Airport transfers'],
-            exclusions=['Lunch & Dinner', 'Activities', 'Personal expenses'],
-            itinerary=[
-                {
-                    'day': 1,
-                    'title': 'Arrival in Goa',
-                    'description': 'Check-in and beach time',
-                    'activities': ['Airport pickup', 'Beach walk'],
-                    'meals': ['Welcome drink'],
-                    'accommodation': 'Beach resort'
-                }
-            ],
-            status='published'
-        )
-        
-        # Create a slot for this trip
-        TripSlot.objects.create(
-            trip=trip2,
-            date='2024-06-20',
-            time='10:00',
-            vehicle_type='AC Bus',
-            total_seats=45,
-            available_seats=12,
-            price=18000,
-            status='filling_fast'
-        )
+        # Goa Beach Retreat trip removed as requested
         
         print("Created sample trip: Goa Beach Retreat")
     

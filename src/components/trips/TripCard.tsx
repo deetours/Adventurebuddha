@@ -24,7 +24,8 @@ export function TripCard({ trip }: TripCardProps) {
   };
 
   const getStatusInfo = () => {
-    const availableSlots = trip.upcomingSlots.filter(slot => slot.status !== 'sold_out');
+    const upcomingSlots = trip.upcomingSlots || [];
+    const availableSlots = upcomingSlots.filter(slot => slot.status !== 'sold_out');
     if (availableSlots.length === 0) {
       return { text: 'Sold Out', color: 'bg-red-500' };
     }
@@ -41,8 +42,9 @@ export function TripCard({ trip }: TripCardProps) {
 
   // Get the next available date
   const getNextAvailableDate = () => {
-    if (trip.upcomingSlots.length > 0) {
-      const sortedSlots = [...trip.upcomingSlots].sort((a, b) => 
+    const upcomingSlots = trip.upcomingSlots || [];
+    if (upcomingSlots.length > 0) {
+      const sortedSlots = [...upcomingSlots].sort((a, b) => 
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       const nextSlot = sortedSlots[0];
@@ -79,9 +81,13 @@ export function TripCard({ trip }: TripCardProps) {
           <div className="relative">
             <div className="relative overflow-hidden">
               <img
-                src={trip.images[0]}
+                src={trip.images && trip.images.length > 0 ? trip.images[0] : '/images/default-trip.svg'}
                 alt={trip.title}
                 className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/images/default-trip.svg';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -132,19 +138,19 @@ export function TripCard({ trip }: TripCardProps) {
               </div>
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-1" />
-                {trip.upcomingSlots.reduce((acc, slot) => acc + slot.availableSeats, 0)} seats left
+                {(trip.upcomingSlots || []).reduce((acc, slot) => acc + slot.availableSeats, 0)} seats left
               </div>
             </div>
 
             <div className="flex flex-wrap gap-1 mb-4">
-              {trip.tags.slice(0, 3).map((tag) => (
+              {(trip.tags || []).slice(0, 3).map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
-              {trip.tags.length > 3 && (
+              {(trip.tags || []).length > 3 && (
                 <Badge variant="outline" className="text-xs">
-                  +{trip.tags.length - 3} more
+                  +{(trip.tags || []).length - 3} more
                 </Badge>
               )}
             </div>

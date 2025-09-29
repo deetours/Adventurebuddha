@@ -50,13 +50,7 @@ Ladakh Adventure (7 Days):
 - Exclusions: Personal expenses, insurance, tips, airport transfers
 
 Goa Beach Retreat (5 Days):
-- Duration: 5 days, 4 nights
-- Price: ₹18,000 per person
-- Difficulty: Easy
-- Best time: November to May
-- Highlights: Beach relaxation, water sports, local cuisine
-- Inclusions: Beach resort accommodation, breakfast, welcome drinks
-- Exclusions: Lunch, dinner, activities, personal expenses
+- This trip has been removed as requested
 
 Kashmir Valley Tour (6 Days):
 - Duration: 6 days, 5 nights

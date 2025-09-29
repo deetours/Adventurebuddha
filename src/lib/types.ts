@@ -14,6 +14,7 @@ export interface Trip {
   exclusions: string[];
   itinerary: ItineraryDay[];
   upcomingSlots: Slot[];
+  featured_status?: 'featured' | 'popular' | 'both' | 'none';
 }
 
 export interface ItineraryDay {

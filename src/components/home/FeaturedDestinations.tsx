@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Users, Play, Heart, MapPin, Calendar, ArrowRight, Eye, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -284,23 +284,29 @@ export function FeaturedDestinations() {
   // Fetch popular trips from API
   const { data: popularTrips = [], isLoading, error } = useQuery({
     queryKey: ['popular-trips'],
-    queryFn: () => apiClient.getTrips({ featured: 'popular' }),
+    queryFn: () => apiClient.getTrips({ featured: 'popular,both' }),
   });
 
-  // Convert trips to destination format
-  const destinations: Destination[] = popularTrips.slice(0, 4).map((trip: Trip) => ({
-    id: trip.id.toString(),
-    name: trip.title,
-    country: 'India',
-    image: trip.images?.[0] || '/images/default-trip.jpg',
-    rating: 4.5,
-    tripsCount: 1,
-    description: trip.description || trip.overview || 'Amazing adventure experience',
-    highlights: trip.tags || ['Adventure', 'Culture'],
-    bestTime: 'Year-round',
-    duration: `${trip.duration} days`,
-    price: trip.price
-  }));
+  // Convert trips to destination format with proper error handling
+  const destinations: Destination[] = React.useMemo(() => {
+    if (!Array.isArray(popularTrips)) {
+      console.warn('popularTrips is not an array:', popularTrips);
+      return [];
+    }
+    return popularTrips.slice(0, 4).map((trip: Trip) => ({
+      id: trip.id.toString(),
+      name: trip.title,
+      country: 'India',
+      image: trip.images && trip.images.length > 0 ? trip.images[0] : '/images/default-trip.svg',
+      rating: 4.5,
+      tripsCount: 1,
+      description: trip.description || 'Amazing adventure experience with Adventure Buddha',
+      highlights: trip.tags || ['Adventure', 'Culture'],
+      bestTime: 'Year-round',
+      duration: `${trip.duration || 3} days`,
+      price: trip.price
+    }));
+  }, [popularTrips]);
 
   const categories = [
     { id: 'all', name: 'All Destinations' },

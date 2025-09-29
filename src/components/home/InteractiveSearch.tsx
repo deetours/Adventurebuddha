@@ -4,6 +4,7 @@ import { Search, Mic, MapPin, Calendar, Star, X, TrendingUp, Clock } from 'lucid
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { apiClient } from '@/lib/api';
 
 interface SearchResult {
   id: string;
@@ -29,51 +30,45 @@ export function InteractiveSearch({ onSearch, className }: InteractiveSearchProp
   const [showResults, setShowResults] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([
-    'Ladakh Trekking',
-    'Goa Beach Resort',
-    'Kerala Backwaters',
-    'Himachal Adventure'
+    'Hampi Heritage',
+    'Coorg Coffee Trail',
+    'Udupi Temple Circuit',
+    'Chikmagalur Trekking'
   ]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [loadingResults, setLoadingResults] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Mock search results
-  const mockResults: SearchResult[] = [
-    {
-      id: '1',
-      title: 'Ladakh Mountain Trek',
-      location: 'Ladakh, India',
-      rating: 4.9,
-      price: 45000,
-      duration: '12 days',
-      image: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-      type: 'trip',
-      highlights: ['High-altitude trekking', 'Cultural immersion', 'Stunning landscapes']
-    },
-    {
-      id: '2',
-      title: 'Goa Beach Paradise',
-      location: 'Goa, India',
-      rating: 4.7,
-      price: 25000,
-      duration: '7 days',
-      image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-      type: 'trip',
-      highlights: ['Beach relaxation', 'Water sports', 'Nightlife']
-    },
-    {
-      id: '3',
-      title: 'Kerala Houseboat Experience',
-      location: 'Kerala, India',
-      rating: 4.8,
-      price: 35000,
-      duration: '8 days',
-      image: 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-      type: 'trip',
-      highlights: ['Backwater cruise', 'Ayurvedic spa', 'Local cuisine']
-    }
-  ];
+  // Fetch popular trips for search results
+  useEffect(() => {
+    const fetchPopularTrips = async () => {
+      try {
+        setLoadingResults(true);
+        const trips = await apiClient.getTrips({ featured: 'popular,both' });
+        const results: SearchResult[] = trips.slice(0, 6).map((trip) => ({
+          id: trip.id.toString(),
+          title: trip.title,
+          location: trip.tags?.join(', ') || 'India',
+          rating: 4.5 + Math.random() * 0.5, // Mock rating since API doesn't provide
+          price: trip.price,
+          duration: `${trip.duration} days`,
+          image: trip.images?.[0] || '/images/default-trip.jpg',
+          type: 'trip' as const,
+          highlights: trip.tags?.slice(0, 3) || ['Adventure', 'Culture', 'Nature']
+        }));
+        setSearchResults(results);
+      } catch (error) {
+        console.error('Failed to fetch search results:', error);
+        setSearchResults([]);
+      } finally {
+        setLoadingResults(false);
+      }
+    };
+
+    fetchPopularTrips();
+  }, []);
 
   const popularSearches = [
     'Trekking', 'Beach', 'Family', 'Adventure', 'Cultural', 'Wildlife', 'Photography', 'Solo Travel'
@@ -369,7 +364,7 @@ export function InteractiveSearch({ onSearch, className }: InteractiveSearchProp
 
             {/* Search Results */}
             <div className="max-h-96 overflow-y-auto">
-              {isSearching ? (
+              {loadingResults ? (
                 <div className="p-8 text-center">
                   <motion.div
                     animate={{ rotate: 360 }}
@@ -378,12 +373,12 @@ export function InteractiveSearch({ onSearch, className }: InteractiveSearchProp
                   >
                     <Search className="h-8 w-8 text-orange-500" />
                   </motion.div>
-                  <p className="text-gray-600 mt-4">Searching amazing adventures...</p>
+                  <p className="text-gray-600 mt-4">Loading amazing adventures...</p>
                 </div>
               ) : (
                 <div className="p-6">
                   <div className="grid gap-4">
-                    {mockResults.map((result, index) => (
+                    {searchResults.map((result, index) => (
                       <motion.div
                         key={result.id}
                         initial={{ opacity: 0, x: -20 }}
@@ -410,7 +405,7 @@ export function InteractiveSearch({ onSearch, className }: InteractiveSearchProp
                           <div className="flex items-center space-x-4 mt-1">
                             <div className="flex items-center space-x-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="text-sm font-medium">{result.rating}</span>
+                              <span className="text-sm font-medium">{result.rating.toFixed(1)}</span>
                             </div>
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4 text-gray-400" />

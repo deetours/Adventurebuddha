@@ -5,11 +5,54 @@ import { Footer } from './Footer';
 import { Toaster } from '../ui/toaster';
 import { ErrorBoundary } from '../ui/error-boundary';
 import { AdventureChatbot } from '../ui/AdventureChatbot';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Add global modal styles to prevent scroll issues
+const addGlobalModalStyles = () => {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Modal backdrop styles */
+    .modal-backdrop {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      z-index: 1000 !important;
+    }
+    
+    /* Prevent body scroll when modal is open */
+    .modal-open {
+      overflow: hidden !important;
+      position: fixed !important;
+      width: 100% !important;
+    }
+    
+    /* Ensure chatbot stays above other content */
+    .chatbot-container {
+      position: fixed !important;
+      z-index: 1100 !important;
+    }
+    
+    /* Modal content responsive styles */
+    @media (max-width: 640px) {
+      .modal-content {
+        margin: 0.5rem !important;
+        max-height: calc(100vh - 1rem) !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+};
 
 export function AppShell() {
   const location = useLocation();
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Initialize global modal styles
+  useEffect(() => {
+    addGlobalModalStyles();
+  }, []);
 
   // Get context based on current route
   const getPageContext = () => {
@@ -58,11 +101,13 @@ export function AppShell() {
         <Toaster />
 
         {/* Global Chatbot */}
-        <AdventureChatbot
-          isOpen={isChatOpen}
-          onToggle={() => setIsChatOpen(!isChatOpen)}
-          context={getPageContext()}
-        />
+        <div className="chatbot-container">
+          <AdventureChatbot
+            isOpen={isChatOpen}
+            onToggle={() => setIsChatOpen(!isChatOpen)}
+            context={getPageContext()}
+          />
+        </div>
       </ErrorBoundary>
     </div>
   );

@@ -37,60 +37,8 @@ export default function BookingsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
 
   // Mock bookings data - in a real app, this would come from an API
-  const [bookings] = useState<Booking[]>([
-    {
-      id: 'booking-1',
-      trip: {
-        title: 'Ladakh Adventure',
-        image: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-      },
-      date: 'June 15, 2024',
-      time: '06:00 AM',
-      location: 'Leh, Ladakh',
-      seats: ['A1', 'B2'],
-      amount: 70500,
-      status: 'confirmed',
-    },
-    {
-      id: 'booking-2',
-      trip: {
-        title: 'Goa Beach Retreat',
-        image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-      },
-      date: 'July 20, 2024',
-      time: '10:00 AM',
-      location: 'Goa',
-      seats: ['C3'],
-      amount: 18000,
-      status: 'pending',
-    },
-    {
-      id: 'booking-3',
-      trip: {
-        title: 'Himalayan Trek',
-        image: 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-      },
-      date: 'May 5, 2024',
-      time: '05:00 AM',
-      location: 'Manali, Himachal Pradesh',
-      seats: ['D1'],
-      amount: 25000,
-      status: 'cancelled',
-    },
-    {
-      id: 'booking-4',
-      trip: {
-        title: 'Kerala Backwaters',
-        image: 'https://images.pexels.com/photos/1005802/pexels-photo-1005802.jpeg',
-      },
-      date: 'August 10, 2024',
-      time: '09:00 AM',
-      location: 'Alleppey, Kerala',
-      seats: ['A3', 'B4', 'C5'],
-      amount: 45000,
-      status: 'confirmed',
-    },
-  ]);
+  // For now, showing empty state since we don't have real bookings
+  const [bookings] = useState<Booking[]>([]);
 
   const getStatusIcon = (status: Booking['status']) => {
     switch (status) {
