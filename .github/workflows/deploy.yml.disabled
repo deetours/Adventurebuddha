@@ -1,0 +1,161 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install frontend dependencies
+      run: npm ci
+
+    - name: Run backend tests
+      run: |
+        cd backend
+        python manage.py test --settings=adventure_buddha_backend.settings --verbosity=2
+      env:
+        DEBUG: True
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
+        REDIS_URL: redis://localhost:6379/0
+
+    - name: Run frontend tests
+      run: npm run test:ci
+
+    - name: Build frontend
+      run: npm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to VM
+      run: |
+        # Create deployment directory on VM
+        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "mkdir -p /home/ubuntu/adventure-buddha-deploy"
+
+        # Copy deployment scripts and monitoring
+        scp deploy.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
+        scp backend/deploy.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/backend-deploy.sh
+        scp monitor.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
+        scp backend/adventure-buddha-backend.service ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
+
+        # Copy environment files
+        scp .env.example ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
+        scp backend/.env.example ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/backend-env.example
+
+        # Make scripts executable and run deployment
+        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "cd /home/ubuntu/adventure-buddha-deploy && chmod +x deploy.sh monitor.sh && ./deploy.sh"
+
+    - name: Health check
+      run: |
+        # Wait for services to be ready
+        sleep 60
+
+        # Check if backend is responding
+        for i in {1..10}; do
+          if curl -f http://${{ secrets.VM_HOST }}:8000/api/health/; then
+            echo "Backend is healthy"
+            break
+          fi
+          echo "Waiting for backend to be ready... ($i/10)"
+          sleep 30
+        done
+
+        # Verify the service is running
+        if curl -f http://${{ secrets.VM_HOST }}:8000/api/health/; then
+          echo "Backend health check passed"
+        else
+          echo "Backend health check failed"
+          exit 1
+        fi
+
+  rollback:
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: deploy
+
+    steps:
+    - name: Checkout previous version
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.before }}
+
+    - name: Rollback deployment
+      run: |
+        # SSH into VM and rollback to previous version
+        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "cd /home/ubuntu/adventure-buddha && git reset --hard HEAD~1 && ./deploy.sh"
+
+    - name: Notify on rollback
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🚨 Deployment Failed - Automatic Rollback Executed',
+            body: `The deployment failed and an automatic rollback to the previous version has been performed.\n\n**Failed commit:** ${context.sha}\n**Previous commit:** ${{ github.event.before }}\n\nPlease investigate the issue and fix before redeploying.`,
+            labels: ['bug', 'deployment']
+          })
