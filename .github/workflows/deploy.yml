@@ -100,8 +100,7 @@ jobs:
         scp deploy.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
         scp backend/deploy.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/backend-deploy.sh
         scp monitor.sh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
-        scp docker-compose.yml ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
-        scp backend/docker-compose.yml ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/backend-docker-compose.yml
+        scp backend/adventure-buddha-backend.service ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
 
         # Copy environment files
         scp .env.example ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/ubuntu/adventure-buddha-deploy/
@@ -117,7 +116,7 @@ jobs:
 
         # Check if backend is responding
         for i in {1..10}; do
-          if curl -f http://${{ secrets.VM_HOST }}/api/health/; then
+          if curl -f http://${{ secrets.VM_HOST }}:8000/api/health/; then
             echo "Backend is healthy"
             break
           fi
@@ -125,11 +124,11 @@ jobs:
           sleep 30
         done
 
-        # Check if frontend is responding
-        if curl -f http://${{ secrets.VM_HOST }}/; then
-          echo "Frontend is healthy"
+        # Verify the service is running
+        if curl -f http://${{ secrets.VM_HOST }}:8000/api/health/; then
+          echo "Backend health check passed"
         else
-          echo "Frontend health check failed"
+          echo "Backend health check failed"
           exit 1
         fi
 

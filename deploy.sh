@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Automated CI/CD Deployment script for Adventure Buddha
-# This script handles deployment with rollback capability
+# Simplified VM Deployment script for Adventure Buddha
+# Uses SQLite instead of Docker containers for resource efficiency
 
 set -euo pipefail
 
@@ -62,6 +62,138 @@ rollback() {
         exit 1
     fi
 }
+
+# Function to check service health
+check_health() {
+    local service=$1
+    local url=$2
+    local max_attempts=30
+    local attempt=1
+
+    log "Checking $service health at $url..."
+
+    while [ $attempt -le $max_attempts ]; do
+        if curl -f --max-time 10 "$url" >/dev/null 2>&1; then
+            success "$service is healthy"
+            return 0
+        fi
+
+        log "Waiting for $service to be ready... (attempt $attempt/$max_attempts)"
+        sleep 10
+        ((attempt++))
+    done
+
+    error "$service failed to become healthy after $max_attempts attempts"
+    return 1
+}
+
+# Trap for cleanup on error
+trap 'error "Deployment failed!"; rollback' ERR
+
+log "🚀 Starting simplified VM deployment..."
+log "Deployment timestamp: $TIMESTAMP"
+log "Log file: $LOG_FILE"
+
+# Create backup before deployment
+create_backup
+
+# Update system packages (minimal update)
+log "📦 Updating system packages..."
+sudo apt update && sudo apt upgrade -y python3 python3-pip python3-venv
+
+# Install Python dependencies if not installed
+if ! command -v python3 &> /dev/null; then
+    log "🐍 Installing Python3..."
+    sudo apt install -y python3 python3-pip python3-venv
+fi
+
+# Create deployment directory if it doesn't exist
+mkdir -p "$DEPLOYMENT_DIR"
+
+# Navigate to deployment directory
+cd "$DEPLOYMENT_DIR"
+
+# Copy environment file if it doesn't exist
+if [ ! -f .env ]; then
+    log "📋 Setting up environment file..."
+    if [ -f /home/ubuntu/adventure-buddha-deploy/.env.example ]; then
+        cp /home/ubuntu/adventure-buddha-deploy/.env.example .env
+        warning "⚠️  Please ensure .env file has correct configuration values!"
+    else
+        error "No .env.example file found!"
+        exit 1
+    fi
+fi
+
+# Copy backend environment file
+if [ ! -f backend/.env ]; then
+    log "📋 Setting up backend environment file..."
+    mkdir -p backend
+    if [ -f /home/ubuntu/adventure-buddha-deploy/backend-env.example ]; then
+        cp /home/ubuntu/adventure-buddha-deploy/backend-env.example backend/.env
+        warning "⚠️  Please ensure backend/.env file has correct configuration values!"
+    fi
+fi
+
+# Stop existing services gracefully
+log "🛑 Stopping existing services..."
+sudo systemctl stop adventure-buddha-backend || true
+pkill -f "python manage.py runserver" || true
+
+# Install/update Python dependencies
+log "📦 Installing Python dependencies..."
+cd backend
+python3 -m pip install --upgrade pip
+pip install -r requirements.txt
+
+# Run database migrations
+log "🗄️  Running database migrations..."
+python3 manage.py migrate
+
+# Populate data (optional)
+log "📊 Populating database..."
+python3 manage.py populate_trips || warning "Data population failed, but continuing..."
+
+# Collect static files
+log "📄 Collecting static files..."
+python3 manage.py collectstatic --noinput --clear
+
+cd ..
+
+# Start the backend service using systemd
+log "🏗️  Starting backend service..."
+sudo cp /home/ubuntu/adventure-buddha-deploy/adventure-buddha-backend.service /etc/systemd/system/ || true
+sudo systemctl daemon-reload
+sudo systemctl enable adventure-buddha-backend
+sudo systemctl start adventure-buddha-backend
+
+# Wait for service to start
+log "⏳ Waiting for backend service to start..."
+sleep 30
+
+# Health checks
+log "🔍 Performing health checks..."
+
+# Check backend health
+if check_health "Backend API" "http://localhost:8000/api/health/"; then
+    success "Backend health check passed"
+else
+    error "Backend health check failed"
+    exit 1
+fi
+
+# Cleanup old backups
+log "🧹 Cleaning up old backups..."
+cd "$BACKUP_DIR" || exit 1
+ls -t backup_* | tail -n +6 | xargs -r rm -rf
+success "Old backups cleaned up"
+
+success "✅ Deployment completed successfully!"
+success "🌐 Application is available at:"
+success "   Backend API: http://$(curl -s ifconfig.me):8000/api/"
+success "   Admin Panel: http://$(curl -s ifconfig.me):8000/admin/"
+
+log "🎉 Deployment finished successfully!"
 
 # Function to cleanup old backups (keep last 5)
 cleanup_backups() {
